@@ -1,12 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import TopNavigation from "@/components/dashboard/TopNavigation";
+import MessagesOverview from "@/components/dashboard/MessagesOverview";
+import TeamMembers from "@/components/dashboard/TeamMembers";
+import PremiumCard from "@/components/dashboard/PremiumCard";
+import RecentConversations from "@/components/dashboard/RecentConversations";
+import MonthlyStats from "@/components/dashboard/MonthlyStats";
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      {/* Top Navigation */}
+      <TopNavigation />
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Left Column - 60% */}
+          <div className="lg:col-span-3 space-y-6">
+            <MessagesOverview />
+            <TeamMembers />
+            <PremiumCard />
+          </div>
+
+          {/* Right Column - 40% */}
+          <div className="lg:col-span-2 space-y-6">
+            <RecentConversations />
+            <MonthlyStats />
+          </div>
+        </div>
+      </main>
     </div>
   );
 };
