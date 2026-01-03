@@ -1,5 +1,26 @@
+// Dashboard Page - DMAuto
+// Komplett redesigned mit HeroUI Komponenten
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Avatar,
+  Chip,
+  Progress,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Divider,
+  Spinner,
+} from "@heroui/react";
 import {
   ChatBubbleLeftRightIcon,
   SparklesIcon,
@@ -17,15 +38,11 @@ import {
   ChartBarIcon,
   ArrowRightIcon,
 } from "@heroicons/react/24/outline";
-import {
-  SparklesIcon as SparklesSolid,
-  BoltIcon as BoltSolid,
-} from "@heroicons/react/24/solid";
 
 // API Base URL - Backend-Verbindung
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
 
-// TypeScript Interface für Instagram Account Daten
+// TypeScript Interfaces
 interface InstagramAccount {
   id: string;
   username: string;
@@ -36,7 +53,6 @@ interface InstagramAccount {
   unread_count: number;
 }
 
-// Interface für Dashboard Statistiken
 interface Stats {
   total_messages: number;
   ai_messages: number;
@@ -44,14 +60,14 @@ interface Stats {
   avg_response_time: string;
 }
 
-// Custom Instagram Icon (Heroicons hat keine Social Media Icons)
+// Custom Instagram Icon
 const InstagramIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
   </svg>
 );
 
-// Custom Bot/Robot Icon
+// Custom Bot Icon
 const BotIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 8V4H8"/>
@@ -76,21 +92,22 @@ const Index = () => {
   const [aiEnabled, setAiEnabled] = useState(true);
   const [togglingAI, setTogglingAI] = useState(false);
   const [account, setAccount] = useState<InstagramAccount | null>(null);
-  const [theme, setTheme] = useState("dmauto");
+  const [isDark, setIsDark] = useState(false);
 
-  // Theme Toggle - Wechselt zwischen Hell und Dunkel
+  // Theme Toggle
   const toggleTheme = () => {
-    const newTheme = theme === "dmauto" ? "dmautodark" : "dmauto";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    document.documentElement.classList.toggle("dark", newTheme);
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
-  // Theme beim Laden aus LocalStorage holen
+  // Theme aus localStorage laden
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dmauto";
-    setTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    const savedTheme = localStorage.getItem("theme");
+    const shouldBeDark = savedTheme === "dark";
+    setIsDark(shouldBeDark);
+    document.documentElement.classList.toggle("dark", shouldBeDark);
   }, []);
 
   // Statistiken vom Backend laden
@@ -103,7 +120,6 @@ const Index = () => {
         let totalMessages = 0;
         let aiMessages = 0;
         
-        // Für jede Konversation die Nachrichten zählen
         for (const conv of conversations) {
           const msgResponse = await fetch(`${API_URL}/api/v1/conversations/${conv.id}/messages`);
           if (msgResponse.ok) {
@@ -120,7 +136,6 @@ const Index = () => {
           avg_response_time: "< 5s",
         });
 
-        // Letzte 5 Aktivitäten für die Liste
         setRecentActivity(
           conversations.slice(0, 5).map((c: any) => ({
             id: c.id,
@@ -138,7 +153,7 @@ const Index = () => {
     }
   };
 
-  // Verbundenen Instagram Account laden
+  // Instagram Account laden
   const fetchAccount = async () => {
     try {
       const response = await fetch(`${API_URL}/api/v1/accounts`);
@@ -154,7 +169,7 @@ const Index = () => {
     }
   };
 
-  // Globale KI An/Aus Funktion
+  // KI Toggle Funktion
   const toggleGlobalAI = async () => {
     setTogglingAI(true);
     try {
@@ -174,7 +189,7 @@ const Index = () => {
     }
   };
 
-  // Initiales Laden und Auto-Refresh alle 30 Sekunden
+  // Initiales Laden
   useEffect(() => {
     fetchStats();
     fetchAccount();
@@ -182,7 +197,7 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Zeit formatieren (z.B. "vor 5m")
+  // Zeit formatieren
   const formatTime = (dateString: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -202,297 +217,307 @@ const Index = () => {
     ? Math.round((stats.ai_messages / stats.total_messages) * 100) 
     : 0;
 
+  // Stats Karten Daten
+  const statCards = [
+    { label: "Nachrichten", value: stats.total_messages, icon: ChatBubbleLeftRightIcon, color: "primary" as const, badge: "Gesamt" },
+    { label: "KI-Antworten", value: stats.ai_messages, icon: SparklesIcon, color: "secondary" as const, badge: "KI" },
+    { label: "Gespräche", value: stats.conversations, icon: UserGroupIcon, color: "success" as const, badge: "Aktiv" },
+    { label: "Antwortzeit", value: stats.avg_response_time, icon: BoltIcon, color: "warning" as const, badge: "Schnell" },
+  ];
+
   return (
-    <div className="min-h-screen bg-base-200 bg-dots">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 bg-dots transition-colors">
       {/* ========== NAVBAR ========== */}
-      <div className="navbar bg-base-100/80 backdrop-blur-xl border-b border-base-300/50 sticky top-0 z-50">
-        <div className="navbar-start">
-          <Link to="/" className="btn btn-ghost gap-2 hover:bg-transparent">
+      <Navbar 
+        maxWidth="xl" 
+        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50"
+        isBlurred
+      >
+        <NavbarBrand>
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
               <img src="/logo.png" alt="DMAuto" className="w-7 h-7 rounded-lg" />
             </div>
-            <span className="font-bold text-lg hidden sm:inline">DMAuto</span>
+            <span className="font-bold text-lg text-slate-900 dark:text-white hidden sm:inline">DMAuto</span>
           </Link>
-        </div>
+        </NavbarBrand>
         
         {/* Desktop Navigation */}
-        <div className="navbar-center hidden md:flex">
-          <ul className="menu menu-horizontal gap-1">
-            <li>
-              <Link to="/dashboard" className="bg-primary/10 text-primary font-medium">
-                <Squares2X2Icon className="w-5 h-5" />
-                Dashboard
-              </Link>
-            </li>
-            <li>
-              <Link to="/inbox" className="hover:bg-base-200">
-                <InboxIcon className="w-5 h-5" />
-                Inbox
-              </Link>
-            </li>
-            <li>
-              <Link to="/settings" className="hover:bg-base-200">
-                <Cog6ToothIcon className="w-5 h-5" />
-                Einstellungen
-              </Link>
-            </li>
-          </ul>
-        </div>
+        <NavbarContent className="hidden md:flex gap-1" justify="center">
+          <NavbarItem>
+            <Button
+              as={Link}
+              to="/dashboard"
+              variant="flat"
+              color="primary"
+              startContent={<Squares2X2Icon className="w-5 h-5" />}
+            >
+              Dashboard
+            </Button>
+          </NavbarItem>
+          <NavbarItem>
+            <Button
+              as={Link}
+              to="/inbox"
+              variant="light"
+              startContent={<InboxIcon className="w-5 h-5" />}
+            >
+              Inbox
+            </Button>
+          </NavbarItem>
+          <NavbarItem>
+            <Button
+              as={Link}
+              to="/settings"
+              variant="light"
+              startContent={<Cog6ToothIcon className="w-5 h-5" />}
+            >
+              Einstellungen
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
 
-        <div className="navbar-end gap-2">
-          {/* Theme Toggle Button */}
-          <button 
-            onClick={toggleTheme} 
-            className="btn btn-ghost btn-circle btn-sm"
-            aria-label="Theme wechseln"
-          >
-            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
-          </button>
+        <NavbarContent justify="end" className="gap-2">
+          {/* Theme Toggle */}
+          <NavbarItem>
+            <Button
+              isIconOnly
+              variant="light"
+              onClick={toggleTheme}
+              aria-label="Theme wechseln"
+            >
+              {isDark ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+            </Button>
+          </NavbarItem>
           
           {/* KI Status Toggle */}
-          <button
-            onClick={toggleGlobalAI}
-            disabled={togglingAI}
-            className={`btn btn-sm gap-2 ${
-              aiEnabled 
-                ? "bg-success/10 text-success hover:bg-success/20 border-success/20" 
-                : "bg-error/10 text-error hover:bg-error/20 border-error/20"
-            }`}
-          >
-            {togglingAI ? (
-              <span className="loading loading-spinner loading-xs"></span>
-            ) : (
-              <PowerIcon className="w-4 h-4" />
-            )}
-            <span className="hidden sm:inline font-medium">{aiEnabled ? "KI aktiv" : "KI aus"}</span>
-          </button>
+          <NavbarItem>
+            <Button
+              variant="flat"
+              color={aiEnabled ? "success" : "danger"}
+              startContent={togglingAI ? <Spinner size="sm" color="current" /> : <PowerIcon className="w-4 h-4" />}
+              onClick={toggleGlobalAI}
+              disabled={togglingAI}
+              size="sm"
+            >
+              <span className="hidden sm:inline">{aiEnabled ? "KI aktiv" : "KI aus"}</span>
+            </Button>
+          </NavbarItem>
 
-          {/* Account Avatar Dropdown */}
+          {/* Account Dropdown */}
           {account && (
-            <div className="dropdown dropdown-end">
-              <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                <div className="w-9 rounded-full ring-2 ring-primary/20 ring-offset-2 ring-offset-base-100">
-                  {account.profile_picture_url ? (
-                    <img src={account.profile_picture_url} alt={account.username} />
-                  ) : (
-                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-full h-full flex items-center justify-center">
-                      <InstagramIcon className="w-4 h-4 text-white" />
-                    </div>
-                  )}
-                </div>
-              </div>
-              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-2xl z-10 w-56 p-2 shadow-xl border border-base-200">
-                <li className="menu-title px-4 py-2">
-                  <span className="text-xs text-base-content/50">Angemeldet als</span>
-                  <span className="font-semibold text-base-content">@{account.username}</span>
-                </li>
-                <div className="divider my-0"></div>
-                <li><Link to="/settings" className="rounded-xl">Einstellungen</Link></li>
-                <li><a className="rounded-xl text-error">Abmelden</a></li>
-              </ul>
-            </div>
+            <NavbarItem>
+              <Dropdown placement="bottom-end">
+                <DropdownTrigger>
+                  <Avatar
+                    as="button"
+                    className="transition-transform"
+                    src={account.profile_picture_url || undefined}
+                    name={account.username?.slice(0, 2).toUpperCase()}
+                    size="sm"
+                    classNames={{
+                      base: "bg-gradient-to-br from-purple-500 to-pink-500 ring-2 ring-primary-500/20 ring-offset-2 ring-offset-white dark:ring-offset-slate-900",
+                      name: "text-white text-xs font-medium",
+                    }}
+                  />
+                </DropdownTrigger>
+                <DropdownMenu aria-label="Account Aktionen">
+                  <DropdownItem key="profile" className="h-14 gap-2" textValue="Profil">
+                    <p className="text-xs text-slate-500">Angemeldet als</p>
+                    <p className="font-semibold">@{account.username}</p>
+                  </DropdownItem>
+                  <DropdownItem key="settings" as={Link} to="/settings">
+                    Einstellungen
+                  </DropdownItem>
+                  <DropdownItem key="logout" color="danger">
+                    Abmelden
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+            </NavbarItem>
           )}
-        </div>
-      </div>
+        </NavbarContent>
+      </Navbar>
 
       {/* ========== MAIN CONTENT ========== */}
       <div className="container mx-auto px-4 py-8 pb-28 md:pb-8 max-w-7xl">
         {/* Page Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-8 gap-4">
           <div className="animate-fade-in">
-            <p className="text-primary font-medium mb-1">Willkommen zurück 👋</p>
-            <h1 className="text-3xl md:text-4xl font-bold">Dashboard</h1>
+            <p className="text-primary-500 font-medium mb-1">Willkommen zurück 👋</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
           </div>
-          <button 
-            onClick={fetchStats} 
-            className="btn btn-ghost btn-sm gap-2 self-start md:self-auto animate-fade-in"
+          <Button 
+            onClick={fetchStats}
+            variant="light"
+            startContent={<ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />}
+            size="sm"
+            className="self-start md:self-auto animate-fade-in"
           >
-            <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             Aktualisieren
-          </button>
+          </Button>
         </div>
 
         {/* ========== STATS GRID ========== */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {/* Stat Card: Nachrichten */}
-          <div className="card bg-base-100 shadow-sm card-hover animate-fade-in">
-            <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <ChatBubbleLeftRightIcon className="w-5 h-5 text-primary" />
-                </div>
-                <span className="badge badge-primary badge-sm">Gesamt</span>
-              </div>
-              <div className="text-3xl font-bold">
-                {loading ? <span className="loading loading-dots loading-sm"></span> : stats.total_messages}
-              </div>
-              <p className="text-sm text-base-content/60">Nachrichten</p>
-            </div>
-          </div>
-
-          {/* Stat Card: KI-Antworten */}
-          <div className="card bg-base-100 shadow-sm card-hover animate-fade-in delay-100">
-            <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-xl bg-secondary/10 flex items-center justify-center">
-                  <SparklesIcon className="w-5 h-5 text-secondary" />
-                </div>
-                <span className="badge badge-secondary badge-sm">KI</span>
-              </div>
-              <div className="text-3xl font-bold">
-                {loading ? <span className="loading loading-dots loading-sm"></span> : stats.ai_messages}
-              </div>
-              <p className="text-sm text-base-content/60">KI-Antworten</p>
-            </div>
-          </div>
-
-          {/* Stat Card: Gespräche */}
-          <div className="card bg-base-100 shadow-sm card-hover animate-fade-in delay-200">
-            <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center">
-                  <UserGroupIcon className="w-5 h-5 text-accent" />
-                </div>
-                <span className="badge badge-accent badge-sm">Aktiv</span>
-              </div>
-              <div className="text-3xl font-bold">
-                {loading ? <span className="loading loading-dots loading-sm"></span> : stats.conversations}
-              </div>
-              <p className="text-sm text-base-content/60">Gespräche</p>
-            </div>
-          </div>
-
-          {/* Stat Card: Antwortzeit */}
-          <div className="card bg-base-100 shadow-sm card-hover animate-fade-in delay-300">
-            <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-xl bg-warning/10 flex items-center justify-center">
-                  <BoltIcon className="w-5 h-5 text-warning" />
-                </div>
-                <span className="badge badge-warning badge-sm">Schnell</span>
-              </div>
-              <div className="text-3xl font-bold">{stats.avg_response_time}</div>
-              <p className="text-sm text-base-content/60">Antwortzeit</p>
-            </div>
-          </div>
+          {statCards.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <Card 
+                key={index} 
+                className="card-hover animate-fade-in bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
+                style={{ animationDelay: `${index * 100}ms` }}
+                shadow="sm"
+              >
+                <CardBody className="p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className={`w-11 h-11 rounded-xl bg-${stat.color}/10 flex items-center justify-center`}>
+                      <IconComponent className={`w-5 h-5 text-${stat.color}`} />
+                    </div>
+                    <Chip size="sm" color={stat.color} variant="flat">
+                      {stat.badge}
+                    </Chip>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900 dark:text-white">
+                    {loading ? <Spinner size="sm" /> : stat.value}
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</p>
+                </CardBody>
+              </Card>
+            );
+          })}
         </div>
 
         {/* ========== MAIN GRID ========== */}
         <div className="grid lg:grid-cols-3 gap-6">
-          {/* Letzte Gespräche - 2 Spalten */}
-          <div className="lg:col-span-2 card bg-base-100 shadow-sm animate-slide-up">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-6">
+          {/* Letzte Gespräche */}
+          <div className="lg:col-span-2">
+            <Card className="animate-slide-up bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" shadow="sm">
+              <CardHeader className="flex justify-between items-center px-6 pt-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <ChartBarIcon className="w-5 h-5 text-primary" />
+                  <div className="w-10 h-10 rounded-xl bg-primary-500/10 flex items-center justify-center">
+                    <ChartBarIcon className="w-5 h-5 text-primary-500" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-lg">Letzte Gespräche</h2>
-                    <p className="text-sm text-base-content/50">Aktuelle Konversationen</p>
+                    <h2 className="font-bold text-lg text-slate-900 dark:text-white">Letzte Gespräche</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">Aktuelle Konversationen</p>
                   </div>
                 </div>
-                <Link to="/inbox" className="btn btn-ghost btn-sm gap-1 text-primary">
+                <Button
+                  as={Link}
+                  to="/inbox"
+                  variant="light"
+                  color="primary"
+                  endContent={<ArrowRightIcon className="w-4 h-4" />}
+                  size="sm"
+                >
                   Alle
-                  <ArrowRightIcon className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {loading ? (
-                <div className="flex justify-center py-12">
-                  <span className="loading loading-spinner loading-lg text-primary"></span>
-                </div>
-              ) : recentActivity.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center">
-                    <ChatBubbleLeftRightIcon className="w-8 h-8 text-base-content/30" />
+                </Button>
+              </CardHeader>
+              <CardBody className="px-6 pb-6">
+                {loading ? (
+                  <div className="flex justify-center py-12">
+                    <Spinner size="lg" color="primary" />
                   </div>
-                  <p className="font-medium text-base-content/70">Noch keine Gespräche</p>
-                  <p className="text-sm text-base-content/50 mt-1">Nachrichten erscheinen hier</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {recentActivity.map((activity, index) => (
-                    <Link
-                      key={activity.id}
-                      to="/inbox"
-                      className="flex items-center gap-4 p-4 rounded-2xl hover:bg-base-200/70 transition-all group"
-                      style={{ animationDelay: `${index * 50}ms` }}
-                    >
-                      <div className="avatar placeholder">
-                        <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-12 h-12 shadow-md">
-                          <span className="text-lg font-medium">{activity.name.charAt(0).toUpperCase()}</span>
+                ) : recentActivity.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                      <ChatBubbleLeftRightIcon className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <p className="font-medium text-slate-700 dark:text-slate-300">Noch keine Gespräche</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Nachrichten erscheinen hier</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {recentActivity.map((activity, index) => (
+                      <Link
+                        key={activity.id}
+                        to="/inbox"
+                        className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all group"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <Avatar
+                          name={activity.name.charAt(0).toUpperCase()}
+                          classNames={{
+                            base: "bg-gradient-to-br from-primary-500 to-secondary-500",
+                            name: "text-white text-lg font-medium",
+                          }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="font-semibold truncate text-slate-900 dark:text-white">{activity.name}</p>
+                            {activity.unread && (
+                              <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <ClockIcon className="w-3 h-3" />
+                            {formatTime(activity.time)}
+                          </p>
                         </div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold truncate">{activity.name}</p>
-                          {activity.unread && (
-                            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                          )}
-                        </div>
-                        <p className="text-sm text-base-content/50 flex items-center gap-1">
-                          <ClockIcon className="w-3 h-3" />
-                          {formatTime(activity.time)}
-                        </p>
-                      </div>
-                      <ArrowUpRightIcon className="w-5 h-5 text-base-content/30 group-hover:text-primary transition-colors" />
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                        <ArrowUpRightIcon className="w-5 h-5 text-slate-400 group-hover:text-primary-500 transition-colors" />
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </CardBody>
+            </Card>
           </div>
 
           {/* Sidebar Cards */}
           <div className="space-y-6">
             {/* KI Prompt Card */}
-            <div className="card bg-gradient-to-br from-primary to-secondary text-white shadow-lg glow-primary animate-slide-up delay-100 shine">
-              <div className="card-body">
+            <Card className="animate-slide-up delay-100 bg-gradient-to-br from-primary-500 to-secondary-500 text-white shadow-lg glow-primary shine" shadow="lg">
+              <CardBody className="p-6">
                 <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-3">
                   <BotIcon className="w-7 h-7" />
                 </div>
-                <h3 className="card-title text-xl">KI anpassen</h3>
+                <h3 className="text-xl font-bold mb-2">KI anpassen</h3>
                 <p className="text-white/80 text-sm mb-4">
                   Konfiguriere wie deine KI antwortet
                 </p>
-                <Link to="/settings" className="btn bg-white/20 border-0 hover:bg-white/30 gap-2 w-full">
+                <Button
+                  as={Link}
+                  to="/settings"
+                  className="bg-white/20 border-0 hover:bg-white/30 text-white w-full"
+                  endContent={<ArrowRightIcon className="w-4 h-4" />}
+                >
                   Einstellungen
-                  <ArrowRightIcon className="w-4 h-4" />
-                </Link>
-              </div>
-            </div>
+                </Button>
+              </CardBody>
+            </Card>
 
             {/* Automatisierung Card */}
-            <div className="card bg-base-100 shadow-sm animate-slide-up delay-200">
-              <div className="card-body">
+            <Card className="animate-slide-up delay-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" shadow="sm">
+              <CardBody className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
-                    <ChartBarIcon className="w-5 h-5 text-success" />
+                  <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                    <ChartBarIcon className="w-5 h-5 text-green-500" />
                   </div>
                   <div>
-                    <h3 className="font-bold">Automatisierung</h3>
-                    <p className="text-xs text-base-content/50">KI-Anteil an Antworten</p>
+                    <h3 className="font-bold text-slate-900 dark:text-white">Automatisierung</h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">KI-Anteil an Antworten</p>
                   </div>
                 </div>
                 
                 <div className="flex items-end justify-between mb-2">
-                  <span className="text-4xl font-bold text-success">{automationRate}%</span>
-                  <span className="text-sm text-base-content/50">automatisiert</span>
+                  <span className="text-4xl font-bold text-green-500">{automationRate}%</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">automatisiert</span>
                 </div>
                 
-                <progress 
-                  className="progress progress-success h-3" 
+                <Progress 
                   value={automationRate} 
-                  max="100"
-                ></progress>
-              </div>
-            </div>
+                  color="success"
+                  size="md"
+                  className="h-3"
+                />
+              </CardBody>
+            </Card>
 
             {/* Quick Tips Card */}
-            <div className="card bg-base-100 shadow-sm animate-slide-up delay-300">
-              <div className="card-body">
-                <h3 className="font-bold flex items-center gap-2 mb-4">
+            <Card className="animate-slide-up delay-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700" shadow="sm">
+              <CardBody className="p-6">
+                <h3 className="font-bold flex items-center gap-2 mb-4 text-slate-900 dark:text-white">
                   <span className="text-xl">💡</span>
                   Schnelltipps
                 </h3>
@@ -503,40 +528,42 @@ const Index = () => {
                     "Prompt regelmäßig testen und optimieren",
                   ].map((tip, i) => (
                     <li key={i} className="flex items-start gap-3 text-sm">
-                      <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <span className="text-xs text-primary font-bold">{i + 1}</span>
+                      <div className="w-5 h-5 rounded-full bg-primary-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <span className="text-xs text-primary-500 font-bold">{i + 1}</span>
                       </div>
-                      <span className="text-base-content/70">{tip}</span>
+                      <span className="text-slate-600 dark:text-slate-400">{tip}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
-            </div>
+              </CardBody>
+            </Card>
           </div>
         </div>
       </div>
 
       {/* ========== MOBILE BOTTOM NAVIGATION ========== */}
-      <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
-        <Link to="/dashboard" className="text-primary bg-primary/10">
-          <Squares2X2Icon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs font-medium">Dashboard</span>
-        </Link>
-        <Link to="/inbox" className="hover:bg-base-200/50">
-          <InboxIcon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs">Inbox</span>
-        </Link>
-        <button 
-          onClick={toggleGlobalAI} 
-          className={aiEnabled ? "text-success" : "text-error"}
-        >
-          <BotIcon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs">{aiEnabled ? "KI An" : "KI Aus"}</span>
-        </button>
-        <Link to="/settings" className="hover:bg-base-200/50">
-          <Cog6ToothIcon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs">Settings</span>
-        </Link>
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-700 safe-pb z-50">
+        <div className="flex items-center justify-around py-2">
+          <Link to="/dashboard" className="flex flex-col items-center p-2 text-primary-500">
+            <Squares2X2Icon className="w-6 h-6" />
+            <span className="text-xs font-medium mt-1">Dashboard</span>
+          </Link>
+          <Link to="/inbox" className="flex flex-col items-center p-2 text-slate-500 dark:text-slate-400 hover:text-primary-500">
+            <InboxIcon className="w-6 h-6" />
+            <span className="text-xs mt-1">Inbox</span>
+          </Link>
+          <button 
+            onClick={toggleGlobalAI}
+            className={`flex flex-col items-center p-2 ${aiEnabled ? "text-green-500" : "text-red-500"}`}
+          >
+            <BotIcon className="w-6 h-6" />
+            <span className="text-xs mt-1">{aiEnabled ? "KI An" : "KI Aus"}</span>
+          </button>
+          <Link to="/settings" className="flex flex-col items-center p-2 text-slate-500 dark:text-slate-400 hover:text-primary-500">
+            <Cog6ToothIcon className="w-6 h-6" />
+            <span className="text-xs mt-1">Settings</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,24 @@
+// Inbox Page - DMAuto
+// Komplett redesigned mit HeroUI Komponenten
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import {
+  Button,
+  Card,
+  CardBody,
+  Avatar,
+  Chip,
+  Input,
+  Navbar,
+  NavbarBrand,
+  NavbarContent,
+  NavbarItem,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+} from "@heroui/react";
 import {
   ChatBubbleLeftRightIcon,
   MagnifyingGlassIcon,
@@ -9,7 +28,6 @@ import {
   InboxIcon,
   ArrowPathIcon,
   CheckIcon,
-  ClockIcon,
   SparklesIcon,
   PauseIcon,
   PlayIcon,
@@ -64,21 +82,22 @@ const Inbox = () => {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [theme, setTheme] = useState("dmauto");
+  const [isDark, setIsDark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Theme Toggle
   const toggleTheme = () => {
-    const newTheme = theme === "dmauto" ? "dmautodark" : "dmauto";
-    setTheme(newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("theme", newTheme);
+    const newTheme = !isDark;
+    setIsDark(newTheme);
+    document.documentElement.classList.toggle("dark", newTheme);
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
   };
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") || "dmauto";
-    setTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
+    const savedTheme = localStorage.getItem("theme");
+    const shouldBeDark = savedTheme === "dark";
+    setIsDark(shouldBeDark);
+    document.documentElement.classList.toggle("dark", shouldBeDark);
   }, []);
 
   // Fetch Conversations
@@ -206,72 +225,92 @@ const Inbox = () => {
   };
 
   return (
-    <div className="h-screen bg-base-200 flex flex-col">
+    <div className="h-screen bg-slate-100 dark:bg-slate-900 flex flex-col transition-colors">
       {/* ========== DESKTOP NAVBAR ========== */}
-      <div className="navbar bg-base-100/80 backdrop-blur-xl border-b border-base-300/50 hidden md:flex">
-        <div className="navbar-start">
-          <Link to="/" className="btn btn-ghost gap-2 hover:bg-transparent">
+      <Navbar 
+        maxWidth="full" 
+        className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 hidden md:flex"
+        isBlurred
+      >
+        <NavbarBrand>
+          <Link to="/" className="flex items-center gap-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
               <img src="/logo.png" alt="DMAuto" className="w-7 h-7 rounded-lg" />
             </div>
-            <span className="font-bold text-lg">DMAuto</span>
+            <span className="font-bold text-lg text-slate-900 dark:text-white">DMAuto</span>
           </Link>
-        </div>
+        </NavbarBrand>
         
-        <div className="navbar-center">
-          <ul className="menu menu-horizontal gap-1">
-            <li><Link to="/dashboard" className="hover:bg-base-200"><Squares2X2Icon className="w-5 h-5" />Dashboard</Link></li>
-            <li><Link to="/inbox" className="bg-primary/10 text-primary font-medium"><InboxIcon className="w-5 h-5" />Inbox</Link></li>
-            <li><Link to="/settings" className="hover:bg-base-200"><Cog6ToothIcon className="w-5 h-5" />Einstellungen</Link></li>
-          </ul>
-        </div>
+        <NavbarContent className="gap-1" justify="center">
+          <NavbarItem>
+            <Button as={Link} to="/dashboard" variant="light" startContent={<Squares2X2Icon className="w-5 h-5" />}>
+              Dashboard
+            </Button>
+          </NavbarItem>
+          <NavbarItem>
+            <Button as={Link} to="/inbox" variant="flat" color="primary" startContent={<InboxIcon className="w-5 h-5" />}>
+              Inbox
+            </Button>
+          </NavbarItem>
+          <NavbarItem>
+            <Button as={Link} to="/settings" variant="light" startContent={<Cog6ToothIcon className="w-5 h-5" />}>
+              Einstellungen
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
 
-        <div className="navbar-end gap-2">
-          <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
-            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
-          </button>
-        </div>
-      </div>
+        <NavbarContent justify="end">
+          <NavbarItem>
+            <Button isIconOnly variant="light" onClick={toggleTheme} aria-label="Theme wechseln">
+              {isDark ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+            </Button>
+          </NavbarItem>
+        </NavbarContent>
+      </Navbar>
 
       {/* ========== MAIN CHAT LAYOUT ========== */}
       <div className="flex-1 flex overflow-hidden">
         {/* ========== CONVERSATIONS SIDEBAR ========== */}
-        <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 bg-base-100 flex-col border-r border-base-300/50`}>
+        <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 bg-white dark:bg-slate-800 flex-col border-r border-slate-200 dark:border-slate-700`}>
           {/* Search Header */}
-          <div className="p-4 border-b border-base-300/50">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl font-bold">Chats</h1>
-              <button onClick={fetchConversations} className="btn btn-ghost btn-sm btn-circle">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Chats</h1>
+              <Button 
+                isIconOnly 
+                variant="light" 
+                onClick={fetchConversations}
+                size="sm"
+              >
                 <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-              </button>
+              </Button>
             </div>
             
             {/* Search Input */}
-            <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40" />
-              <input
-                type="text"
-                placeholder="Suchen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="input input-bordered w-full pl-10 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
-              />
-            </div>
+            <Input
+              placeholder="Suchen..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              startContent={<MagnifyingGlassIcon className="w-4 h-4 text-slate-400" />}
+              classNames={{
+                inputWrapper: "bg-slate-100 dark:bg-slate-700 border-slate-200 dark:border-slate-600",
+              }}
+            />
           </div>
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="flex justify-center py-12">
-                <span className="loading loading-spinner loading-lg text-primary"></span>
+                <Spinner size="lg" color="primary" />
               </div>
             ) : filteredConversations.length === 0 ? (
               <div className="text-center py-12 px-4">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center">
-                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-base-content/30" />
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-slate-400" />
                 </div>
-                <p className="font-medium text-base-content/70">Keine Gespräche</p>
-                <p className="text-sm text-base-content/50 mt-1">Neue Nachrichten erscheinen hier</p>
+                <p className="font-medium text-slate-700 dark:text-slate-300">Keine Gespräche</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Neue Nachrichten erscheinen hier</p>
               </div>
             ) : (
               <div className="p-2 space-y-1">
@@ -281,36 +320,36 @@ const Inbox = () => {
                     onClick={() => setSelectedConversation(conv)}
                     className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all text-left ${
                       selectedConversation?.id === conv.id 
-                        ? "bg-primary/10 border border-primary/20" 
-                        : "hover:bg-base-200/70"
+                        ? "bg-primary-500/10 border border-primary-500/20" 
+                        : "hover:bg-slate-100 dark:hover:bg-slate-700"
                     }`}
                   >
-                    {/* Avatar */}
-                    <div className="avatar placeholder">
-                      <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-12 h-12 shadow-sm">
-                        <span className="text-lg font-medium">{getInitial(conv)}</span>
-                      </div>
-                    </div>
+                    <Avatar
+                      name={getInitial(conv)}
+                      classNames={{
+                        base: "bg-gradient-to-br from-primary-500 to-secondary-500",
+                        name: "text-white text-lg font-medium",
+                      }}
+                    />
                     
-                    {/* Info */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold truncate">{getDisplayName(conv)}</span>
-                        <span className="text-xs text-base-content/50 flex-shrink-0">{formatTime(conv.last_message_at)}</span>
+                        <span className="font-semibold truncate text-slate-900 dark:text-white">{getDisplayName(conv)}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 flex-shrink-0">{formatTime(conv.last_message_at)}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-1">
                         {conv.ai_paused ? (
-                          <span className="badge badge-warning badge-xs gap-1">
-                            <PauseIcon className="w-2 h-2" /> Manuell
-                          </span>
+                          <Chip size="sm" color="warning" variant="flat" startContent={<PauseIcon className="w-2 h-2" />}>
+                            Manuell
+                          </Chip>
                         ) : conv.needs_human_review ? (
-                          <span className="badge badge-error badge-xs">Wichtig</span>
+                          <Chip size="sm" color="danger" variant="flat">Wichtig</Chip>
                         ) : (
-                          <span className="badge badge-success badge-xs gap-1">
-                            <BotIcon className="w-2 h-2" /> KI
-                          </span>
+                          <Chip size="sm" color="success" variant="flat" startContent={<BotIcon className="w-2 h-2" />}>
+                            KI
+                          </Chip>
                         )}
-                        {!conv.is_read && <span className="w-2 h-2 rounded-full bg-primary"></span>}
+                        {!conv.is_read && <span className="w-2 h-2 rounded-full bg-primary-500"></span>}
                       </div>
                     </div>
                   </button>
@@ -321,55 +360,61 @@ const Inbox = () => {
         </div>
 
         {/* ========== CHAT AREA ========== */}
-        <div className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-base-100`}>
+        <div className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-white dark:bg-slate-800`}>
           {selectedConversation ? (
             <>
               {/* Chat Header */}
-              <div className="flex items-center justify-between px-4 py-3 bg-base-100 border-b border-base-300/50">
+              <div className="flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
                 <div className="flex items-center gap-3">
-                  <button
+                  <Button
+                    isIconOnly
+                    variant="light"
                     onClick={() => setSelectedConversation(null)}
-                    className="btn btn-ghost btn-sm btn-circle md:hidden"
+                    className="md:hidden"
+                    size="sm"
                   >
                     <ArrowLeftIcon className="w-5 h-5" />
-                  </button>
-                  <div className="avatar placeholder">
-                    <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-10 h-10 shadow-sm">
-                      <span>{getInitial(selectedConversation)}</span>
-                    </div>
-                  </div>
+                  </Button>
+                  <Avatar
+                    name={getInitial(selectedConversation)}
+                    size="sm"
+                    classNames={{
+                      base: "bg-gradient-to-br from-primary-500 to-secondary-500",
+                      name: "text-white font-medium",
+                    }}
+                  />
                   <div>
-                    <p className="font-semibold">{getDisplayName(selectedConversation)}</p>
-                    <p className="text-xs text-base-content/50">Instagram</p>
+                    <p className="font-semibold text-slate-900 dark:text-white">{getDisplayName(selectedConversation)}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Instagram</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <button
+                  <Button
+                    variant="flat"
+                    color={selectedConversation.ai_paused ? "warning" : "success"}
+                    startContent={selectedConversation.ai_paused ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
                     onClick={toggleAIPause}
-                    className={`btn btn-sm gap-2 ${
-                      selectedConversation.ai_paused 
-                        ? "bg-warning/10 text-warning hover:bg-warning/20 border-warning/20" 
-                        : "bg-success/10 text-success hover:bg-success/20 border-success/20"
-                    }`}
+                    size="sm"
                   >
-                    {selectedConversation.ai_paused ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
                     <span className="hidden sm:inline">{selectedConversation.ai_paused ? "KI aktivieren" : "Manuell"}</span>
-                  </button>
-                  <div className="dropdown dropdown-end">
-                    <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle">
-                      <EllipsisVerticalIcon className="w-4 h-4" />
-                    </button>
-                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-2xl z-10 w-52 p-2 shadow-xl border border-base-200">
-                      <li><a className="rounded-xl">Als ungelesen markieren</a></li>
-                      <li><a className="rounded-xl">Archivieren</a></li>
-                    </ul>
-                  </div>
+                  </Button>
+                  <Dropdown>
+                    <DropdownTrigger>
+                      <Button isIconOnly variant="light" size="sm">
+                        <EllipsisVerticalIcon className="w-4 h-4" />
+                      </Button>
+                    </DropdownTrigger>
+                    <DropdownMenu aria-label="Optionen">
+                      <DropdownItem key="unread">Als ungelesen markieren</DropdownItem>
+                      <DropdownItem key="archive">Archivieren</DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-base-200/30 bg-dots">
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-900 bg-dots">
                 {messages.map((message, index) => (
                   <div
                     key={message.id}
@@ -379,19 +424,19 @@ const Inbox = () => {
                     <div className={`max-w-[80%] md:max-w-[70%] ${message.direction === "outbound" ? "order-2" : ""}`}>
                       <div className={`px-4 py-3 rounded-2xl ${
                         message.direction === "outbound"
-                          ? "bg-primary text-primary-content rounded-br-md"
-                          : "bg-base-100 shadow-sm rounded-bl-md"
+                          ? "bg-primary-500 text-white rounded-br-md"
+                          : "bg-white dark:bg-slate-800 shadow-sm rounded-bl-md text-slate-900 dark:text-white"
                       }`}>
                         <p className="text-sm leading-relaxed">{message.content}</p>
                         {message.is_ai_generated && (
                           <span className={`inline-flex items-center gap-1 text-xs mt-2 ${
-                            message.direction === "outbound" ? "text-primary-content/70" : "text-base-content/50"
+                            message.direction === "outbound" ? "text-white/70" : "text-slate-500 dark:text-slate-400"
                           }`}>
                             <SparklesIcon className="w-3 h-3" /> KI-generiert
                           </span>
                         )}
                       </div>
-                      <div className={`flex items-center gap-1 mt-1 text-xs text-base-content/40 ${
+                      <div className={`flex items-center gap-1 mt-1 text-xs text-slate-400 ${
                         message.direction === "outbound" ? "justify-end" : ""
                       }`}>
                         {message.status === "delivered" && <CheckIcon className="w-3 h-3" />}
@@ -404,44 +449,45 @@ const Inbox = () => {
               </div>
 
               {/* Message Input */}
-              <div className="p-4 bg-base-100 border-t border-base-300/50 safe-pb">
+              <div className="p-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 safe-pb">
                 {selectedConversation.ai_paused && (
-                  <div className="alert bg-warning/10 border border-warning/20 mb-3 py-3 rounded-xl">
-                    <PauseIcon className="w-4 h-4 text-warning" />
-                    <span className="text-sm text-warning">Du führst das Gespräch – KI ist pausiert</span>
-                  </div>
+                  <Card className="mb-3 bg-amber-500/10 border border-amber-500/20" shadow="none">
+                    <CardBody className="flex flex-row items-center gap-2 py-2 px-3">
+                      <PauseIcon className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm text-amber-600 dark:text-amber-400">Du führst das Gespräch – KI ist pausiert</span>
+                    </CardBody>
+                  </Card>
                 )}
                 <div className="flex gap-2">
-                  <input
-                    type="text"
+                  <Input
                     placeholder="Nachricht schreiben..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                    className="input input-bordered flex-1 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
+                    classNames={{
+                      inputWrapper: "bg-slate-100 dark:bg-slate-700",
+                    }}
+                    className="flex-1"
                   />
-                  <button
+                  <Button
+                    isIconOnly
+                    color="primary"
                     onClick={sendMessage}
                     disabled={!newMessage.trim() || sending}
-                    className="btn btn-primary btn-square"
                   >
-                    {sending ? (
-                      <span className="loading loading-spinner loading-sm"></span>
-                    ) : (
-                      <PaperAirplaneIcon className="w-5 h-5" />
-                    )}
-                  </button>
+                    {sending ? <Spinner size="sm" color="current" /> : <PaperAirplaneIcon className="w-5 h-5" />}
+                  </Button>
                 </div>
               </div>
             </>
           ) : (
             /* Empty State */
-            <div className="flex-1 flex flex-col items-center justify-center bg-base-200/30 bg-dots">
-              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6 animate-float">
-                <ChatBubbleLeftRightIcon className="w-10 h-10 text-primary" />
+            <div className="flex-1 flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-900 bg-dots">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary-500/10 to-secondary-500/10 flex items-center justify-center mb-6 animate-float">
+                <ChatBubbleLeftRightIcon className="w-10 h-10 text-primary-500" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Wähle ein Gespräch</h3>
-              <p className="text-base-content/60 text-center max-w-xs">
+              <h3 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">Wähle ein Gespräch</h3>
+              <p className="text-slate-500 dark:text-slate-400 text-center max-w-xs">
                 Klicke auf ein Gespräch in der Liste, um die Nachrichten anzuzeigen
               </p>
             </div>
@@ -450,19 +496,21 @@ const Inbox = () => {
       </div>
 
       {/* ========== MOBILE BOTTOM NAV ========== */}
-      <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
-        <Link to="/dashboard" className="hover:bg-base-200/50">
-          <Squares2X2Icon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs">Dashboard</span>
-        </Link>
-        <Link to="/inbox" className="text-primary bg-primary/10">
-          <InboxIcon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs font-medium">Inbox</span>
-        </Link>
-        <Link to="/settings" className="hover:bg-base-200/50">
-          <Cog6ToothIcon className="w-5 h-5" />
-          <span className="btm-nav-label text-xs">Settings</span>
-        </Link>
+      <div className="fixed bottom-0 left-0 right-0 md:hidden bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-700 safe-pb z-50">
+        <div className="flex items-center justify-around py-2">
+          <Link to="/dashboard" className="flex flex-col items-center p-2 text-slate-500 dark:text-slate-400 hover:text-primary-500">
+            <Squares2X2Icon className="w-6 h-6" />
+            <span className="text-xs mt-1">Dashboard</span>
+          </Link>
+          <Link to="/inbox" className="flex flex-col items-center p-2 text-primary-500">
+            <InboxIcon className="w-6 h-6" />
+            <span className="text-xs font-medium mt-1">Inbox</span>
+          </Link>
+          <Link to="/settings" className="flex flex-col items-center p-2 text-slate-500 dark:text-slate-400 hover:text-primary-500">
+            <Cog6ToothIcon className="w-6 h-6" />
+            <span className="text-xs mt-1">Settings</span>
+          </Link>
+        </div>
       </div>
     </div>
   );
