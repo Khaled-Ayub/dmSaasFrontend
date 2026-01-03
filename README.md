@@ -1,73 +1,72 @@
-# Welcome to your Lovable project
+# DMS Antwort - Frontend
 
-## Project info
+Instagram DM Automation Dashboard - Automatisiere deine Instagram Direct Messages mit KI.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Tech Stack
 
-## How can I edit this code?
+- **Vite** - Build Tool
+- **React 18** - UI Framework
+- **TypeScript** - Type Safety
+- **Tailwind CSS** - Styling
+- **shadcn/ui** - UI Components
+- **TanStack Query** - Data Fetching
+- **React Router** - Routing
 
-There are several ways of editing your application.
+## Installation
 
-**Use Lovable**
+```bash
+# Dependencies installieren
+npm install
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Development Server starten
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Die App läuft dann auf `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Build
 
-**Use GitHub Codespaces**
+```bash
+# Production Build erstellen
+npm run build
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+# Preview des Builds
+npm run preview
+```
 
-## What technologies are used for this project?
+## Umgebungsvariablen
 
-This project is built with:
+Erstelle eine `.env` Datei im Root-Verzeichnis:
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```env
+VITE_API_URL=https://dmsaas-production.up.railway.app
+```
 
-## How can I deploy this project?
+## Projektstruktur
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```
+src/
+├── components/     # Wiederverwendbare UI-Komponenten
+│   ├── ui/        # shadcn/ui Basis-Komponenten
+│   └── dashboard/ # Dashboard-spezifische Komponenten
+├── pages/         # Seiten-Komponenten
+│   ├── Landing.tsx
+│   ├── Index.tsx  # Dashboard
+│   ├── Inbox.tsx  # Chat-Ansicht
+│   └── Settings.tsx
+├── hooks/         # Custom React Hooks
+├── lib/           # Utility Funktionen
+└── App.tsx        # Root Component mit Routing
+```
 
-## Can I connect a custom domain to my Lovable project?
+## Features
 
-Yes, you can!
+- 🤖 KI-gestützte automatische Antworten
+- 💬 Inbox mit Chat-Interface
+- ⚙️ AI-Einstellungen konfigurierbar
+- 📊 Dashboard mit Statistiken
+- 🌐 Komplett auf Deutsch
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Deployment
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Das Frontend wird auf Vercel gehostet mit automatischen Deployments bei jedem Push.
