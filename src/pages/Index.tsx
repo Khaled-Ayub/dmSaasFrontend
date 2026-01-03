@@ -217,9 +217,9 @@ const Index = () => {
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex overflow-hidden">
-      {/* Icon Sidebar */}
-      <aside className="w-[72px] bg-white border-r border-slate-200/60 flex flex-col items-center py-4 shadow-sm">
+    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col md:flex-row overflow-hidden">
+      {/* Desktop Sidebar - versteckt auf Mobile */}
+      <aside className="hidden md:flex w-[72px] bg-white border-r border-slate-200/60 flex-col items-center py-4 shadow-sm">
         {/* Logo */}
         <Link to="/" className="mb-8">
           <img src="/logo.png" alt="DMAuto Logo" className="w-11 h-11 rounded-2xl shadow-lg shadow-blue-500/25" />
@@ -271,52 +271,52 @@ const Index = () => {
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-8 py-5">
+        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-8 py-4 md:py-5">
           <div className="flex items-center justify-between max-w-6xl mx-auto">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 md:gap-4">
               {/* Account Info */}
               {account ? (
-                <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
+                <div className="flex items-center gap-2 md:gap-3 md:pr-4 md:border-r border-slate-200">
                   {account.profile_picture_url ? (
                     <img 
                       src={account.profile_picture_url} 
                       alt={account.username}
-                      className="w-10 h-10 rounded-full border-2 border-pink-500"
+                      className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-pink-500"
                     />
                   ) : (
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-full flex items-center justify-center">
-                      <Instagram className="w-5 h-5 text-white" />
+                    <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-full flex items-center justify-center">
+                      <Instagram className="w-4 h-4 md:w-5 md:h-5 text-white" />
                     </div>
                   )}
-                  <div>
+                  <div className="hidden sm:block">
                     <p className="text-sm font-semibold text-slate-800">@{account.username}</p>
                     <p className="text-xs text-slate-500">Instagram verbunden</p>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <Instagram className="w-5 h-5 text-slate-400" />
+                <div className="flex items-center gap-2 md:gap-3 md:pr-4 md:border-r border-slate-200">
+                  <div className="w-9 h-9 md:w-10 md:h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                    <Instagram className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
                   </div>
-                  <div>
+                  <div className="hidden sm:block">
                     <p className="text-sm font-medium text-slate-500">Kein Account</p>
                     <p className="text-xs text-slate-400">Warte auf Verbindung</p>
                   </div>
                 </div>
               )}
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-                <p className="text-slate-500 text-sm mt-0.5">
+                <h1 className="text-lg md:text-2xl font-bold text-slate-800">Dashboard</h1>
+                <p className="text-slate-500 text-xs md:text-sm mt-0.5 hidden sm:block">
                   Übersicht über deine Instagram DMs
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               {/* Global AI Toggle */}
               <button
                 onClick={toggleGlobalAI}
                 disabled={togglingAI}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-medium transition-all ${
                   aiEnabled
                     ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
                     : "bg-rose-50 text-rose-700 hover:bg-rose-100"
@@ -329,49 +329,49 @@ const Index = () => {
                 ) : (
                   <PowerOff className="w-4 h-4" />
                 )}
-                {aiEnabled ? "KI aktiv" : "KI deaktiviert"}
+                <span className="hidden sm:inline">{aiEnabled ? "KI aktiv" : "KI deaktiviert"}</span>
               </button>
 
               <button
                 onClick={fetchStats}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
+                className="flex items-center gap-2 p-2 md:px-4 md:py-2.5 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-                Aktualisieren
+                <span className="hidden md:inline">Aktualisieren</span>
               </button>
             </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-8 max-w-6xl mx-auto">
+        <div className="p-4 md:p-8 pb-24 md:pb-8 max-w-6xl mx-auto">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
             {statCards.map((stat, index) => {
               const IconComponent = stat.icon;
               return (
                 <div
                   key={index}
-                  className={`bg-gradient-to-br ${stat.bgGradient} rounded-2xl p-5 border border-white/60 shadow-sm hover:shadow-md transition-all`}
+                  className={`bg-gradient-to-br ${stat.bgGradient} rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/60 shadow-sm hover:shadow-md transition-all`}
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <div className={`w-12 h-12 bg-gradient-to-br ${stat.gradient} rounded-xl flex items-center justify-center shadow-lg`}>
-                      <IconComponent className="w-6 h-6 text-white" />
+                  <div className="flex items-start justify-between mb-2 md:mb-4">
+                    <div className={`w-9 h-9 md:w-12 md:h-12 bg-gradient-to-br ${stat.gradient} rounded-lg md:rounded-xl flex items-center justify-center shadow-lg`}>
+                      <IconComponent className="w-4 h-4 md:w-6 md:h-6 text-white" />
                     </div>
                   </div>
-                  <p className="text-3xl font-bold text-slate-800 mb-1">
+                  <p className="text-xl md:text-3xl font-bold text-slate-800 mb-0.5 md:mb-1">
                     {loading ? "..." : stat.value}
                   </p>
-                  <p className="text-sm text-slate-600">{stat.label}</p>
+                  <p className="text-xs md:text-sm text-slate-600">{stat.label}</p>
                 </div>
               );
             })}
           </div>
 
           {/* Content Grid */}
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
             {/* Recent Activity */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm">
+            <div className="lg:col-span-2 bg-white rounded-xl md:rounded-2xl border border-slate-200/60 p-4 md:p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
@@ -479,6 +479,47 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2 safe-area-pb">
+        <div className="flex items-center justify-around">
+          <Link
+            to="/dashboard"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-blue-600"
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-xs font-medium">Dashboard</span>
+          </Link>
+          <Link
+            to="/inbox"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
+          >
+            <Inbox className="w-5 h-5" />
+            <span className="text-xs font-medium">Inbox</span>
+          </Link>
+          <button
+            onClick={toggleGlobalAI}
+            disabled={togglingAI}
+            className={`flex flex-col items-center gap-1 py-2 px-4 ${
+              aiEnabled ? "text-emerald-600" : "text-rose-600"
+            }`}
+          >
+            {togglingAI ? (
+              <RefreshCw className="w-5 h-5 animate-spin" />
+            ) : (
+              <Bot className="w-5 h-5" />
+            )}
+            <span className="text-xs font-medium">{aiEnabled ? "KI An" : "KI Aus"}</span>
+          </button>
+          <Link
+            to="/settings"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
+          >
+            <Settings className="w-5 h-5" />
+            <span className="text-xs font-medium">Settings</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 };

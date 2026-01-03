@@ -129,9 +129,9 @@ const Settings = () => {
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex overflow-hidden">
-      {/* Icon Sidebar */}
-      <aside className="w-[72px] bg-white border-r border-slate-200/60 flex flex-col items-center py-4 shadow-sm">
+    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col md:flex-row overflow-hidden">
+      {/* Desktop Sidebar - versteckt auf Mobile */}
+      <aside className="hidden md:flex w-[72px] bg-white border-r border-slate-200/60 flex-col items-center py-4 shadow-sm">
         {/* Logo */}
         <Link to="/" className="mb-8">
           <img src="/logo.png" alt="DMAuto Logo" className="w-11 h-11 rounded-2xl shadow-lg shadow-blue-500/25" />
@@ -168,17 +168,17 @@ const Settings = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-20 md:pb-0">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-8 py-5">
+        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-8 py-4 md:py-5">
           <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-                <Brain className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
+                <Brain className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-800">AI-Einstellungen</h1>
-                <p className="text-slate-500 text-sm mt-0.5">
+                <h1 className="text-lg md:text-2xl font-bold text-slate-800">AI-Einstellungen</h1>
+                <p className="text-slate-500 text-xs md:text-sm mt-0.5 hidden sm:block">
                   Konfiguriere wie deine KI antwortet
                 </p>
               </div>
@@ -187,14 +187,14 @@ const Settings = () => {
             <button
               onClick={saveSettings}
               disabled={saving || !settings}
-              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:shadow-none"
+              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-xs md:text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:shadow-none"
             >
               {saving ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              Speichern
+              <span className="hidden sm:inline">Speichern</span>
             </button>
           </div>
         </div>
@@ -204,7 +204,7 @@ const Settings = () => {
             <RefreshCw className="w-8 h-8 text-slate-400 animate-spin" />
           </div>
         ) : (
-          <div className="p-8 max-w-4xl mx-auto">
+          <div className="p-4 md:p-8 max-w-4xl mx-auto">
             {/* Notifications */}
             {error && (
               <div className="mb-6 p-4 bg-rose-50 border border-rose-200/60 rounded-xl flex items-center gap-3 text-rose-700">
@@ -411,6 +411,33 @@ const Settings = () => {
           </div>
         )}
       </div>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2 safe-area-pb">
+        <div className="flex items-center justify-around">
+          <Link
+            to="/dashboard"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
+          >
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-xs font-medium">Dashboard</span>
+          </Link>
+          <Link
+            to="/inbox"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
+          >
+            <Inbox className="w-5 h-5" />
+            <span className="text-xs font-medium">Inbox</span>
+          </Link>
+          <Link
+            to="/settings"
+            className="flex flex-col items-center gap-1 py-2 px-4 text-blue-600"
+          >
+            <SettingsIcon className="w-5 h-5" />
+            <span className="text-xs font-medium">Settings</span>
+          </Link>
+        </div>
+      </nav>
     </div>
   );
 };

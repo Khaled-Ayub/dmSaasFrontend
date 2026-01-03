@@ -19,6 +19,7 @@ import {
   Star,
   MoreHorizontal,
   Plus,
+  ArrowLeft,
 } from "lucide-react";
 
 // Types
@@ -201,9 +202,9 @@ const Inbox = () => {
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex overflow-hidden">
-      {/* Icon Sidebar */}
-      <aside className="w-[72px] bg-white border-r border-slate-200/60 flex flex-col items-center py-4 shadow-sm">
+    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col md:flex-row overflow-hidden">
+      {/* Desktop Sidebar - versteckt auf Mobile */}
+      <aside className="hidden md:flex w-[72px] bg-white border-r border-slate-200/60 flex-col items-center py-4 shadow-sm">
         {/* Logo */}
         <Link to="/" className="mb-8">
           <img src="/logo.png" alt="DMAuto Logo" className="w-11 h-11 rounded-2xl shadow-lg shadow-blue-500/25" />
@@ -239,8 +240,8 @@ const Inbox = () => {
         </div>
       </aside>
 
-      {/* Conversations Panel */}
-      <div className="w-[320px] bg-white/80 backdrop-blur-sm border-r border-slate-200/60 flex flex-col h-full">
+      {/* Conversations Panel - Vollbreite auf Mobile wenn kein Chat ausgewählt */}
+      <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-[320px] bg-white/80 backdrop-blur-sm border-r border-slate-200/60 flex-col h-full`}>
         {/* Header */}
         <div className="p-5 border-b border-slate-100">
           <div className="flex items-center justify-between mb-4">
@@ -349,17 +350,24 @@ const Inbox = () => {
       </div>
 
       {/* Chat Area */}
-      <div className="flex-1 flex flex-col h-full min-h-0 bg-white/50">
+      <div className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 flex-col h-full min-h-0 bg-white/50`}>
         {selectedConversation ? (
           <>
             {/* Chat Header */}
-            <div className="h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-6 flex-shrink-0">
-              <div className="flex items-center gap-4">
-                <div className={`w-11 h-11 bg-gradient-to-br ${getAvatarColor(selectedConversation.id)} rounded-full flex items-center justify-center text-white font-medium shadow-sm`}>
+            <div className="h-[60px] md:h-[72px] bg-white border-b border-slate-200/60 flex items-center justify-between px-3 md:px-6 flex-shrink-0">
+              <div className="flex items-center gap-2 md:gap-4">
+                {/* Zurück-Button für Mobile */}
+                <button
+                  onClick={() => setSelectedConversation(null)}
+                  className="md:hidden w-9 h-9 rounded-xl text-slate-600 hover:bg-slate-100 flex items-center justify-center"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <div className={`w-10 h-10 md:w-11 md:h-11 bg-gradient-to-br ${getAvatarColor(selectedConversation.id)} rounded-full flex items-center justify-center text-white font-medium shadow-sm`}>
                   {getInitials(selectedConversation)}
                 </div>
                 <div>
-                  <h2 className="font-semibold text-slate-800">
+                  <h2 className="font-semibold text-slate-800 text-sm md:text-base">
                     {selectedConversation.participant_name || selectedConversation.participant_username || `User ${selectedConversation.participant_ig_id.slice(-4)}`}
                   </h2>
                   <p className="text-xs text-slate-400">Instagram • Online</p>
@@ -367,11 +375,11 @@ const Inbox = () => {
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 {/* AI Toggle */}
                 <button
                   onClick={toggleAIPause}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-xl text-xs md:text-sm font-medium transition-all ${
                     selectedConversation.ai_paused
                       ? "bg-amber-50 text-amber-700 hover:bg-amber-100"
                       : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
@@ -380,17 +388,17 @@ const Inbox = () => {
                   {selectedConversation.ai_paused ? (
                     <>
                       <Play className="w-4 h-4" />
-                      KI aktivieren
+                      <span className="hidden sm:inline">KI aktivieren</span>
                     </>
                   ) : (
                     <>
                       <Pause className="w-4 h-4" />
-                      Selbst antworten
+                      <span className="hidden sm:inline">Selbst antworten</span>
                     </>
                   )}
                 </button>
                 
-                <button className="w-9 h-9 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors">
+                <button className="hidden md:flex w-9 h-9 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 items-center justify-center transition-colors">
                   <Star className="w-4 h-4" />
                 </button>
                 <button className="w-9 h-9 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors">
@@ -400,22 +408,22 @@ const Inbox = () => {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 min-h-0">
-              <div className="max-w-3xl mx-auto space-y-4">
+            <div className="flex-1 overflow-y-auto p-3 md:p-6 min-h-0">
+              <div className="max-w-3xl mx-auto space-y-3 md:space-y-4">
                 {messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.direction === "outbound" ? "justify-end" : "justify-start"}`}
                   >
                     <div
-                      className={`max-w-[75%] rounded-2xl px-4 py-3 ${
+                      className={`max-w-[85%] md:max-w-[75%] rounded-2xl px-3 md:px-4 py-2 md:py-3 ${
                         message.direction === "outbound"
                           ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20"
                           : "bg-white text-slate-800 shadow-sm border border-slate-100"
                       }`}
                     >
                       <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                      <div className={`flex items-center gap-2 mt-2 text-xs ${
+                      <div className={`flex items-center gap-2 mt-1.5 md:mt-2 text-xs ${
                         message.direction === "outbound" ? "text-blue-100" : "text-slate-400"
                       }`}>
                         {message.is_ai_generated && (
@@ -441,32 +449,32 @@ const Inbox = () => {
             </div>
 
             {/* Message Input */}
-            <div className="p-4 bg-white border-t border-slate-200/60 flex-shrink-0">
+            <div className="p-3 md:p-4 bg-white border-t border-slate-200/60 flex-shrink-0 safe-area-pb">
               <div className="max-w-3xl mx-auto">
                 {/* AI Paused Warning */}
                 {selectedConversation.ai_paused && (
-                  <div className="mb-3 px-4 py-2.5 bg-amber-50 border border-amber-200/60 rounded-xl flex items-center gap-2 text-sm text-amber-700">
-                    <Pause className="w-4 h-4" />
-                    Du führst das Gespräch – KI-Antworten sind pausiert
+                  <div className="mb-2 md:mb-3 px-3 md:px-4 py-2 bg-amber-50 border border-amber-200/60 rounded-xl flex items-center gap-2 text-xs md:text-sm text-amber-700">
+                    <Pause className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Du führst das Gespräch – KI pausiert</span>
                   </div>
                 )}
                 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 md:gap-3">
                   <input
                     type="text"
                     placeholder="Nachricht schreiben..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                    className="flex-1 bg-slate-100/80 border-0 rounded-xl px-4 py-3 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white focus:outline-none transition-all"
+                    className="flex-1 bg-slate-100/80 border-0 rounded-xl px-3 md:px-4 py-2.5 md:py-3 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:bg-white focus:outline-none transition-all"
                   />
                   <button
                     onClick={sendMessage}
                     disabled={!newMessage.trim() || sending}
-                    className="h-11 px-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
+                    className="h-10 md:h-11 px-3 md:px-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:shadow-none flex items-center gap-2"
                   >
                     <Send className="w-4 h-4" />
-                    Senden
+                    <span className="hidden md:inline">Senden</span>
                   </button>
                 </div>
               </div>
