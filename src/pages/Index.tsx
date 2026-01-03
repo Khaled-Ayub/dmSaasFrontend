@@ -1,26 +1,26 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  MessageSquare,
-  Bot,
-  LayoutDashboard,
-  Inbox,
-  Settings,
-  Users,
-  Zap,
-  ArrowUpRight,
-  RefreshCw,
-  Clock,
-  Sparkles,
-  Power,
-  PowerOff,
-  Instagram,
-  TrendingUp,
-  Sun,
-  Moon,
-  Activity,
-  ArrowRight,
-} from "lucide-react";
+  ChatBubbleLeftRightIcon,
+  SparklesIcon,
+  Squares2X2Icon,
+  InboxIcon,
+  Cog6ToothIcon,
+  UserGroupIcon,
+  BoltIcon,
+  ArrowUpRightIcon,
+  ArrowPathIcon,
+  ClockIcon,
+  PowerIcon,
+  SunIcon,
+  MoonIcon,
+  ChartBarIcon,
+  ArrowRightIcon,
+} from "@heroicons/react/24/outline";
+import {
+  SparklesIcon as SparklesSolid,
+  BoltIcon as BoltSolid,
+} from "@heroicons/react/24/solid";
 
 // API Base URL - Backend-Verbindung
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
@@ -43,6 +43,25 @@ interface Stats {
   conversations: number;
   avg_response_time: string;
 }
+
+// Custom Instagram Icon (Heroicons hat keine Social Media Icons)
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </svg>
+);
+
+// Custom Bot/Robot Icon
+const BotIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8V4H8"/>
+    <rect width="16" height="12" x="4" y="8" rx="2"/>
+    <path d="M2 14h2"/>
+    <path d="M20 14h2"/>
+    <path d="M15 13v2"/>
+    <path d="M9 13v2"/>
+  </svg>
+);
 
 const Index = () => {
   // State Management
@@ -201,19 +220,19 @@ const Index = () => {
           <ul className="menu menu-horizontal gap-1">
             <li>
               <Link to="/dashboard" className="bg-primary/10 text-primary font-medium">
-                <LayoutDashboard className="w-4 h-4" />
+                <Squares2X2Icon className="w-5 h-5" />
                 Dashboard
               </Link>
             </li>
             <li>
               <Link to="/inbox" className="hover:bg-base-200">
-                <Inbox className="w-4 h-4" />
+                <InboxIcon className="w-5 h-5" />
                 Inbox
               </Link>
             </li>
             <li>
               <Link to="/settings" className="hover:bg-base-200">
-                <Settings className="w-4 h-4" />
+                <Cog6ToothIcon className="w-5 h-5" />
                 Einstellungen
               </Link>
             </li>
@@ -227,7 +246,7 @@ const Index = () => {
             className="btn btn-ghost btn-circle btn-sm"
             aria-label="Theme wechseln"
           >
-            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
           </button>
           
           {/* KI Status Toggle */}
@@ -242,10 +261,8 @@ const Index = () => {
           >
             {togglingAI ? (
               <span className="loading loading-spinner loading-xs"></span>
-            ) : aiEnabled ? (
-              <Power className="w-4 h-4" />
             ) : (
-              <PowerOff className="w-4 h-4" />
+              <PowerIcon className="w-4 h-4" />
             )}
             <span className="hidden sm:inline font-medium">{aiEnabled ? "KI aktiv" : "KI aus"}</span>
           </button>
@@ -259,7 +276,7 @@ const Index = () => {
                     <img src={account.profile_picture_url} alt={account.username} />
                   ) : (
                     <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-full h-full flex items-center justify-center">
-                      <Instagram className="w-4 h-4 text-white" />
+                      <InstagramIcon className="w-4 h-4 text-white" />
                     </div>
                   )}
                 </div>
@@ -290,7 +307,7 @@ const Index = () => {
             onClick={fetchStats} 
             className="btn btn-ghost btn-sm gap-2 self-start md:self-auto animate-fade-in"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             Aktualisieren
           </button>
         </div>
@@ -302,7 +319,7 @@ const Index = () => {
             <div className="card-body p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-primary" />
+                  <ChatBubbleLeftRightIcon className="w-5 h-5 text-primary" />
                 </div>
                 <span className="badge badge-primary badge-sm">Gesamt</span>
               </div>
@@ -318,7 +335,7 @@ const Index = () => {
             <div className="card-body p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-xl bg-secondary/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-secondary" />
+                  <SparklesIcon className="w-5 h-5 text-secondary" />
                 </div>
                 <span className="badge badge-secondary badge-sm">KI</span>
               </div>
@@ -334,7 +351,7 @@ const Index = () => {
             <div className="card-body p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-xl bg-accent/10 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-accent" />
+                  <UserGroupIcon className="w-5 h-5 text-accent" />
                 </div>
                 <span className="badge badge-accent badge-sm">Aktiv</span>
               </div>
@@ -350,7 +367,7 @@ const Index = () => {
             <div className="card-body p-5">
               <div className="flex items-center justify-between mb-3">
                 <div className="w-11 h-11 rounded-xl bg-warning/10 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-warning" />
+                  <BoltIcon className="w-5 h-5 text-warning" />
                 </div>
                 <span className="badge badge-warning badge-sm">Schnell</span>
               </div>
@@ -368,7 +385,7 @@ const Index = () => {
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-primary" />
+                    <ChartBarIcon className="w-5 h-5 text-primary" />
                   </div>
                   <div>
                     <h2 className="font-bold text-lg">Letzte Gespräche</h2>
@@ -377,7 +394,7 @@ const Index = () => {
                 </div>
                 <Link to="/inbox" className="btn btn-ghost btn-sm gap-1 text-primary">
                   Alle
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRightIcon className="w-4 h-4" />
                 </Link>
               </div>
 
@@ -388,7 +405,7 @@ const Index = () => {
               ) : recentActivity.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center">
-                    <MessageSquare className="w-8 h-8 text-base-content/30" />
+                    <ChatBubbleLeftRightIcon className="w-8 h-8 text-base-content/30" />
                   </div>
                   <p className="font-medium text-base-content/70">Noch keine Gespräche</p>
                   <p className="text-sm text-base-content/50 mt-1">Nachrichten erscheinen hier</p>
@@ -415,11 +432,11 @@ const Index = () => {
                           )}
                         </div>
                         <p className="text-sm text-base-content/50 flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
+                          <ClockIcon className="w-3 h-3" />
                           {formatTime(activity.time)}
                         </p>
                       </div>
-                      <ArrowUpRight className="w-5 h-5 text-base-content/30 group-hover:text-primary transition-colors" />
+                      <ArrowUpRightIcon className="w-5 h-5 text-base-content/30 group-hover:text-primary transition-colors" />
                     </Link>
                   ))}
                 </div>
@@ -433,7 +450,7 @@ const Index = () => {
             <div className="card bg-gradient-to-br from-primary to-secondary text-white shadow-lg glow-primary animate-slide-up delay-100 shine">
               <div className="card-body">
                 <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mb-3">
-                  <Bot className="w-7 h-7" />
+                  <BotIcon className="w-7 h-7" />
                 </div>
                 <h3 className="card-title text-xl">KI anpassen</h3>
                 <p className="text-white/80 text-sm mb-4">
@@ -441,7 +458,7 @@ const Index = () => {
                 </p>
                 <Link to="/settings" className="btn bg-white/20 border-0 hover:bg-white/30 gap-2 w-full">
                   Einstellungen
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRightIcon className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -451,7 +468,7 @@ const Index = () => {
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-success/10 flex items-center justify-center">
-                    <TrendingUp className="w-5 h-5 text-success" />
+                    <ChartBarIcon className="w-5 h-5 text-success" />
                   </div>
                   <div>
                     <h3 className="font-bold">Automatisierung</h3>
@@ -502,22 +519,22 @@ const Index = () => {
       {/* ========== MOBILE BOTTOM NAVIGATION ========== */}
       <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
         <Link to="/dashboard" className="text-primary bg-primary/10">
-          <LayoutDashboard className="w-5 h-5" />
+          <Squares2X2Icon className="w-5 h-5" />
           <span className="btm-nav-label text-xs font-medium">Dashboard</span>
         </Link>
         <Link to="/inbox" className="hover:bg-base-200/50">
-          <Inbox className="w-5 h-5" />
+          <InboxIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Inbox</span>
         </Link>
         <button 
           onClick={toggleGlobalAI} 
           className={aiEnabled ? "text-success" : "text-error"}
         >
-          <Bot className="w-5 h-5" />
+          <BotIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">{aiEnabled ? "KI An" : "KI Aus"}</span>
         </button>
         <Link to="/settings" className="hover:bg-base-200/50">
-          <Settings className="w-5 h-5" />
+          <Cog6ToothIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Settings</span>
         </Link>
       </div>

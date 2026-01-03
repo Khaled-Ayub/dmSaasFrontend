@@ -1,24 +1,42 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
-  Bot,
-  MessageSquare,
-  Zap,
-  Shield,
-  Clock,
-  TrendingUp,
-  Star,
-  CheckCircle,
-  ArrowRight,
-  Instagram,
-  Sparkles,
-  Users,
-  BarChart3,
-  Sun,
-  Moon,
-  Play,
-  ChevronRight,
-} from "lucide-react";
+  ChatBubbleLeftRightIcon,
+  BoltIcon,
+  ShieldCheckIcon,
+  ClockIcon,
+  ArrowTrendingUpIcon,
+  StarIcon,
+  CheckCircleIcon,
+  ArrowRightIcon,
+  SparklesIcon,
+  UserGroupIcon,
+  ChartBarIcon,
+  SunIcon,
+  MoonIcon,
+  PlayIcon,
+  ChevronRightIcon,
+} from "@heroicons/react/24/outline";
+import { StarIcon as StarSolid } from "@heroicons/react/24/solid";
+
+// Custom Bot Icon
+const BotIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8V4H8"/>
+    <rect width="16" height="12" x="4" y="8" rx="2"/>
+    <path d="M2 14h2"/>
+    <path d="M20 14h2"/>
+    <path d="M15 13v2"/>
+    <path d="M9 13v2"/>
+  </svg>
+);
+
+// Custom Instagram Icon
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+  </svg>
+);
 
 const Landing = () => {
   const [theme, setTheme] = useState("dmauto");
@@ -40,25 +58,25 @@ const Landing = () => {
   // Features
   const features = [
     {
-      icon: Bot,
+      icon: BotIcon,
       title: "KI-Automatisierung",
       description: "Intelligente Antworten auf Kundenanfragen rund um die Uhr – ohne Pause",
       color: "primary",
     },
     {
-      icon: Zap,
+      icon: BoltIcon,
       title: "Blitzschnell",
       description: "Durchschnittliche Antwortzeit unter 5 Sekunden – bevor Kunden abspringen",
       color: "warning",
     },
     {
-      icon: Shield,
+      icon: ShieldCheckIcon,
       title: "Smart Eskalation",
       description: "Erkennt wichtige Anfragen automatisch zur manuellen Bearbeitung",
       color: "error",
     },
     {
-      icon: BarChart3,
+      icon: ChartBarIcon,
       title: "Statistiken",
       description: "Detaillierte Einblicke in deine Konversationen und KI-Performance",
       color: "success",
@@ -123,11 +141,11 @@ const Landing = () => {
 
         <div className="navbar-end gap-2">
           <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
-            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
           </button>
           <Link to="/dashboard" className="btn btn-primary btn-sm gap-2 shadow-md">
             Dashboard
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRightIcon className="w-4 h-4" />
           </Link>
         </div>
       </div>
@@ -146,7 +164,7 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-8 animate-fade-in">
-              <Sparkles className="w-4 h-4" />
+              <SparklesIcon className="w-4 h-4" />
               KI-gestützte Instagram Automatisierung
             </div>
 
@@ -168,10 +186,10 @@ const Landing = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in delay-300">
               <Link to="/dashboard" className="btn btn-primary btn-lg gap-2 shadow-lg glow-primary">
                 Jetzt starten
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRightIcon className="w-5 h-5" />
               </Link>
               <a href="#features" className="btn btn-outline btn-lg gap-2">
-                <Play className="w-5 h-5" />
+                <PlayIcon className="w-5 h-5" />
                 Mehr erfahren
               </a>
             </div>
@@ -190,7 +208,7 @@ const Landing = () => {
               <div className="text-left">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-5 h-5 fill-warning text-warning" />
+                    <StarSolid key={i} className="w-5 h-5 text-warning" />
                   ))}
                   <span className="ml-2 font-semibold">4.9/5</span>
                 </div>
@@ -207,7 +225,7 @@ const Landing = () => {
           {/* Section Header */}
           <div className="text-center mb-16">
             <div className="badge badge-secondary badge-lg gap-2 mb-4">
-              <Zap className="w-3 h-3" />
+              <BoltIcon className="w-3 h-3" />
               Features
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -248,7 +266,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16">
             <div className="badge badge-accent badge-lg gap-2 mb-4">
-              <MessageSquare className="w-3 h-3" />
+              <ChatBubbleLeftRightIcon className="w-3 h-3" />
               So funktioniert's
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -283,7 +301,7 @@ const Landing = () => {
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <div className="animate-fade-in">
               <div className="badge bg-white/10 border-white/20 text-white gap-2 mb-6">
-                <TrendingUp className="w-3 h-3" />
+                <ArrowTrendingUpIcon className="w-3 h-3" />
                 Vorteile
               </div>
               <h2 className="text-3xl lg:text-4xl font-bold mb-6">
@@ -299,7 +317,7 @@ const Landing = () => {
                 {benefits.map((benefit, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircleIcon className="w-4 h-4" />
                     </div>
                     <span className="text-sm">{benefit}</span>
                   </div>
@@ -336,7 +354,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-16">
             <div className="badge badge-primary badge-lg gap-2 mb-4">
-              <Users className="w-3 h-3" />
+              <UserGroupIcon className="w-3 h-3" />
               Kundenstimmen
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -355,7 +373,7 @@ const Landing = () => {
                   {/* Stars */}
                   <div className="flex gap-1 mb-4">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-warning text-warning" />
+                      <StarSolid key={i} className="w-5 h-5 text-warning" />
                     ))}
                   </div>
                   
@@ -389,7 +407,7 @@ const Landing = () => {
         
         <div className="container mx-auto px-4 max-w-3xl text-center relative">
           <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center mx-auto mb-8 shadow-xl glow-primary animate-float">
-            <Instagram className="w-10 h-10 text-white" />
+            <InstagramIcon className="w-10 h-10 text-white" />
           </div>
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
             Bereit für Autopilot?
@@ -400,7 +418,7 @@ const Landing = () => {
           </p>
           <Link to="/dashboard" className="btn btn-primary btn-lg gap-2 shadow-lg glow-primary">
             Zum Dashboard
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRightIcon className="w-5 h-5" />
           </Link>
         </div>
       </section>

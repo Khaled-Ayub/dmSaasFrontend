@@ -1,25 +1,23 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
-  MessageSquare,
-  Search,
-  Send,
-  Bot,
-  Settings,
-  LayoutDashboard,
-  Inbox as InboxIcon,
-  RefreshCw,
-  CheckCheck,
-  Clock,
-  Sparkles,
-  Pause,
-  Play,
-  ArrowLeft,
-  Sun,
-  Moon,
-  MoreVertical,
-  User,
-} from "lucide-react";
+  ChatBubbleLeftRightIcon,
+  MagnifyingGlassIcon,
+  PaperAirplaneIcon,
+  Cog6ToothIcon,
+  Squares2X2Icon,
+  InboxIcon,
+  ArrowPathIcon,
+  CheckIcon,
+  ClockIcon,
+  SparklesIcon,
+  PauseIcon,
+  PlayIcon,
+  ArrowLeftIcon,
+  SunIcon,
+  MoonIcon,
+  EllipsisVerticalIcon,
+} from "@heroicons/react/24/outline";
 
 // TypeScript Interfaces
 interface Message {
@@ -44,6 +42,18 @@ interface Conversation {
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
+
+// Custom Bot Icon
+const BotIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8V4H8"/>
+    <rect width="16" height="12" x="4" y="8" rx="2"/>
+    <path d="M2 14h2"/>
+    <path d="M20 14h2"/>
+    <path d="M15 13v2"/>
+    <path d="M9 13v2"/>
+  </svg>
+);
 
 const Inbox = () => {
   // State
@@ -210,15 +220,15 @@ const Inbox = () => {
         
         <div className="navbar-center">
           <ul className="menu menu-horizontal gap-1">
-            <li><Link to="/dashboard" className="hover:bg-base-200"><LayoutDashboard className="w-4 h-4" />Dashboard</Link></li>
-            <li><Link to="/inbox" className="bg-primary/10 text-primary font-medium"><InboxIcon className="w-4 h-4" />Inbox</Link></li>
-            <li><Link to="/settings" className="hover:bg-base-200"><Settings className="w-4 h-4" />Einstellungen</Link></li>
+            <li><Link to="/dashboard" className="hover:bg-base-200"><Squares2X2Icon className="w-5 h-5" />Dashboard</Link></li>
+            <li><Link to="/inbox" className="bg-primary/10 text-primary font-medium"><InboxIcon className="w-5 h-5" />Inbox</Link></li>
+            <li><Link to="/settings" className="hover:bg-base-200"><Cog6ToothIcon className="w-5 h-5" />Einstellungen</Link></li>
           </ul>
         </div>
 
         <div className="navbar-end gap-2">
           <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
-            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
           </button>
         </div>
       </div>
@@ -232,13 +242,13 @@ const Inbox = () => {
             <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-bold">Chats</h1>
               <button onClick={fetchConversations} className="btn btn-ghost btn-sm btn-circle">
-                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                <ArrowPathIcon className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
             
             {/* Search Input */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40" />
               <input
                 type="text"
                 placeholder="Suchen..."
@@ -258,7 +268,7 @@ const Inbox = () => {
             ) : filteredConversations.length === 0 ? (
               <div className="text-center py-12 px-4">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center">
-                  <MessageSquare className="w-8 h-8 text-base-content/30" />
+                  <ChatBubbleLeftRightIcon className="w-8 h-8 text-base-content/30" />
                 </div>
                 <p className="font-medium text-base-content/70">Keine Gespräche</p>
                 <p className="text-sm text-base-content/50 mt-1">Neue Nachrichten erscheinen hier</p>
@@ -291,13 +301,13 @@ const Inbox = () => {
                       <div className="flex items-center gap-2 mt-1">
                         {conv.ai_paused ? (
                           <span className="badge badge-warning badge-xs gap-1">
-                            <Pause className="w-2 h-2" /> Manuell
+                            <PauseIcon className="w-2 h-2" /> Manuell
                           </span>
                         ) : conv.needs_human_review ? (
                           <span className="badge badge-error badge-xs">Wichtig</span>
                         ) : (
                           <span className="badge badge-success badge-xs gap-1">
-                            <Bot className="w-2 h-2" /> KI
+                            <BotIcon className="w-2 h-2" /> KI
                           </span>
                         )}
                         {!conv.is_read && <span className="w-2 h-2 rounded-full bg-primary"></span>}
@@ -321,7 +331,7 @@ const Inbox = () => {
                     onClick={() => setSelectedConversation(null)}
                     className="btn btn-ghost btn-sm btn-circle md:hidden"
                   >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeftIcon className="w-5 h-5" />
                   </button>
                   <div className="avatar placeholder">
                     <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-10 h-10 shadow-sm">
@@ -343,12 +353,12 @@ const Inbox = () => {
                         : "bg-success/10 text-success hover:bg-success/20 border-success/20"
                     }`}
                   >
-                    {selectedConversation.ai_paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                    {selectedConversation.ai_paused ? <PlayIcon className="w-4 h-4" /> : <PauseIcon className="w-4 h-4" />}
                     <span className="hidden sm:inline">{selectedConversation.ai_paused ? "KI aktivieren" : "Manuell"}</span>
                   </button>
                   <div className="dropdown dropdown-end">
                     <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle">
-                      <MoreVertical className="w-4 h-4" />
+                      <EllipsisVerticalIcon className="w-4 h-4" />
                     </button>
                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-2xl z-10 w-52 p-2 shadow-xl border border-base-200">
                       <li><a className="rounded-xl">Als ungelesen markieren</a></li>
@@ -377,14 +387,14 @@ const Inbox = () => {
                           <span className={`inline-flex items-center gap-1 text-xs mt-2 ${
                             message.direction === "outbound" ? "text-primary-content/70" : "text-base-content/50"
                           }`}>
-                            <Sparkles className="w-3 h-3" /> KI-generiert
+                            <SparklesIcon className="w-3 h-3" /> KI-generiert
                           </span>
                         )}
                       </div>
                       <div className={`flex items-center gap-1 mt-1 text-xs text-base-content/40 ${
                         message.direction === "outbound" ? "justify-end" : ""
                       }`}>
-                        {message.status === "delivered" && <CheckCheck className="w-3 h-3" />}
+                        {message.status === "delivered" && <CheckIcon className="w-3 h-3" />}
                         {formatTime(message.created_at)}
                       </div>
                     </div>
@@ -397,7 +407,7 @@ const Inbox = () => {
               <div className="p-4 bg-base-100 border-t border-base-300/50 safe-pb">
                 {selectedConversation.ai_paused && (
                   <div className="alert bg-warning/10 border border-warning/20 mb-3 py-3 rounded-xl">
-                    <Pause className="w-4 h-4 text-warning" />
+                    <PauseIcon className="w-4 h-4 text-warning" />
                     <span className="text-sm text-warning">Du führst das Gespräch – KI ist pausiert</span>
                   </div>
                 )}
@@ -418,7 +428,7 @@ const Inbox = () => {
                     {sending ? (
                       <span className="loading loading-spinner loading-sm"></span>
                     ) : (
-                      <Send className="w-5 h-5" />
+                      <PaperAirplaneIcon className="w-5 h-5" />
                     )}
                   </button>
                 </div>
@@ -428,7 +438,7 @@ const Inbox = () => {
             /* Empty State */
             <div className="flex-1 flex flex-col items-center justify-center bg-base-200/30 bg-dots">
               <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6 animate-float">
-                <MessageSquare className="w-10 h-10 text-primary" />
+                <ChatBubbleLeftRightIcon className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-2">Wähle ein Gespräch</h3>
               <p className="text-base-content/60 text-center max-w-xs">
@@ -442,7 +452,7 @@ const Inbox = () => {
       {/* ========== MOBILE BOTTOM NAV ========== */}
       <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
         <Link to="/dashboard" className="hover:bg-base-200/50">
-          <LayoutDashboard className="w-5 h-5" />
+          <Squares2X2Icon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Dashboard</span>
         </Link>
         <Link to="/inbox" className="text-primary bg-primary/10">
@@ -450,7 +460,7 @@ const Inbox = () => {
           <span className="btm-nav-label text-xs font-medium">Inbox</span>
         </Link>
         <Link to="/settings" className="hover:bg-base-200/50">
-          <Settings className="w-5 h-5" />
+          <Cog6ToothIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Settings</span>
         </Link>
       </div>

@@ -1,24 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  Bot,
-  Save,
-  LayoutDashboard,
-  Inbox,
-  Settings as SettingsIcon,
-  Sparkles,
-  AlertCircle,
-  CheckCircle,
-  Zap,
-  Brain,
-  Languages,
-  Sliders,
-  Sun,
-  Moon,
-  MessageSquare,
-  Lightbulb,
-  Target,
-} from "lucide-react";
+  DocumentArrowDownIcon,
+  Squares2X2Icon,
+  InboxIcon,
+  Cog6ToothIcon,
+  SparklesIcon,
+  ExclamationCircleIcon,
+  CheckCircleIcon,
+  BoltIcon,
+  LanguageIcon,
+  AdjustmentsHorizontalIcon,
+  SunIcon,
+  MoonIcon,
+  LightBulbIcon,
+  FlagIcon,
+} from "@heroicons/react/24/outline";
 
 // TypeScript Interface für AI-Einstellungen
 interface AISettings {
@@ -36,6 +33,33 @@ interface AISettings {
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
+
+// Custom Bot Icon
+const BotIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 8V4H8"/>
+    <rect width="16" height="12" x="4" y="8" rx="2"/>
+    <path d="M2 14h2"/>
+    <path d="M20 14h2"/>
+    <path d="M15 13v2"/>
+    <path d="M9 13v2"/>
+  </svg>
+);
+
+// Custom Brain Icon
+const BrainIcon = ({ className }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/>
+    <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/>
+    <path d="M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4"/>
+    <path d="M17.599 6.5a3 3 0 0 0 .399-1.375"/>
+    <path d="M6.003 5.125A3 3 0 0 0 6.401 6.5"/>
+    <path d="M3.477 10.896a4 4 0 0 1 .585-.396"/>
+    <path d="M19.938 10.5a4 4 0 0 1 .585.396"/>
+    <path d="M6 18a4 4 0 0 1-1.967-.516"/>
+    <path d="M19.967 17.484A4 4 0 0 1 18 18"/>
+  </svg>
+);
 
 const Settings = () => {
   // State
@@ -163,15 +187,15 @@ const Settings = () => {
         
         <div className="navbar-center hidden md:flex">
           <ul className="menu menu-horizontal gap-1">
-            <li><Link to="/dashboard" className="hover:bg-base-200"><LayoutDashboard className="w-4 h-4" />Dashboard</Link></li>
-            <li><Link to="/inbox" className="hover:bg-base-200"><Inbox className="w-4 h-4" />Inbox</Link></li>
-            <li><Link to="/settings" className="bg-primary/10 text-primary font-medium"><SettingsIcon className="w-4 h-4" />Einstellungen</Link></li>
+            <li><Link to="/dashboard" className="hover:bg-base-200"><Squares2X2Icon className="w-5 h-5" />Dashboard</Link></li>
+            <li><Link to="/inbox" className="hover:bg-base-200"><InboxIcon className="w-5 h-5" />Inbox</Link></li>
+            <li><Link to="/settings" className="bg-primary/10 text-primary font-medium"><Cog6ToothIcon className="w-5 h-5" />Einstellungen</Link></li>
           </ul>
         </div>
 
         <div className="navbar-end gap-2">
           <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
-            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+            {theme === "dmauto" ? <MoonIcon className="w-5 h-5" /> : <SunIcon className="w-5 h-5" />}
           </button>
           <button
             onClick={saveSettings}
@@ -181,7 +205,7 @@ const Settings = () => {
             {saving ? (
               <span className="loading loading-spinner loading-xs"></span>
             ) : (
-              <Save className="w-4 h-4" />
+              <DocumentArrowDownIcon className="w-4 h-4" />
             )}
             <span className="hidden sm:inline">Speichern</span>
           </button>
@@ -193,7 +217,7 @@ const Settings = () => {
         {/* Page Header */}
         <div className="flex items-center gap-4 mb-8 animate-fade-in">
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-secondary to-accent flex items-center justify-center shadow-lg glow-secondary">
-            <Brain className="w-7 h-7 text-white" />
+            <BrainIcon className="w-7 h-7 text-white" />
           </div>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">KI-Einstellungen</h1>
@@ -204,13 +228,13 @@ const Settings = () => {
         {/* Notifications */}
         {error && (
           <div className="alert bg-error/10 border border-error/20 text-error mb-6 rounded-2xl animate-scale-in">
-            <AlertCircle className="w-5 h-5" />
+            <ExclamationCircleIcon className="w-5 h-5" />
             <span>{error}</span>
           </div>
         )}
         {saved && (
           <div className="alert bg-success/10 border border-success/20 text-success mb-6 rounded-2xl animate-scale-in">
-            <CheckCircle className="w-5 h-5" />
+            <CheckCircleIcon className="w-5 h-5" />
             <span>Einstellungen erfolgreich gespeichert!</span>
           </div>
         )}
@@ -226,7 +250,7 @@ const Settings = () => {
               <div className="card-body">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-6 h-6 text-secondary" />
+                    <SparklesIcon className="w-6 h-6 text-secondary" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">System Prompt</h3>
@@ -249,7 +273,7 @@ const Settings = () => {
                 <div className="card-body">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-warning/10 flex items-center justify-center">
-                      <Bot className="w-5 h-5 text-warning" />
+                      <BotIcon className="w-5 h-5 text-warning" />
                     </div>
                     <div>
                       <h3 className="font-bold">Persönlichkeit</h3>
@@ -270,7 +294,7 @@ const Settings = () => {
                 <div className="card-body">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-info/10 flex items-center justify-center">
-                      <Languages className="w-5 h-5 text-info" />
+                      <LanguageIcon className="w-5 h-5 text-info" />
                     </div>
                     <div>
                       <h3 className="font-bold">Sprache</h3>
@@ -296,7 +320,7 @@ const Settings = () => {
               <div className="card-body">
                 <div className="flex items-start gap-4 mb-4">
                   <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-6 h-6 text-success" />
+                    <BoltIcon className="w-6 h-6 text-success" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">Business-Kontext</h3>
@@ -323,7 +347,7 @@ Rückgabe: 14 Tage Widerrufsrecht..."
               <div className="card-body">
                 <div className="flex items-start gap-4 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Sliders className="w-6 h-6 text-primary" />
+                    <AdjustmentsHorizontalIcon className="w-6 h-6 text-primary" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg">Erweiterte Einstellungen</h3>
@@ -358,7 +382,7 @@ Rückgabe: 14 Tage Widerrufsrecht..."
                 <div className="form-control mb-6">
                   <label className="label">
                     <span className="label-text font-medium flex items-center gap-2">
-                      <Target className="w-4 h-4 text-error" />
+                      <FlagIcon className="w-4 h-4 text-error" />
                       Eskalations-Keywords
                     </span>
                     <span className="label-text-alt">Kommagetrennt</span>
@@ -425,7 +449,7 @@ Rückgabe: 14 Tage Widerrufsrecht..."
               <div className="card-body">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                    <Lightbulb className="w-5 h-5" />
+                    <LightBulbIcon className="w-5 h-5" />
                   </div>
                   <h4 className="font-bold text-lg">Tipps für bessere Prompts</h4>
                 </div>
@@ -453,15 +477,15 @@ Rückgabe: 14 Tage Widerrufsrecht..."
       {/* ========== MOBILE BOTTOM NAV ========== */}
       <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
         <Link to="/dashboard" className="hover:bg-base-200/50">
-          <LayoutDashboard className="w-5 h-5" />
+          <Squares2X2Icon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Dashboard</span>
         </Link>
         <Link to="/inbox" className="hover:bg-base-200/50">
-          <Inbox className="w-5 h-5" />
+          <InboxIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs">Inbox</span>
         </Link>
         <Link to="/settings" className="text-primary bg-primary/10">
-          <SettingsIcon className="w-5 h-5" />
+          <Cog6ToothIcon className="w-5 h-5" />
           <span className="btm-nav-label text-xs font-medium">Settings</span>
         </Link>
       </div>
