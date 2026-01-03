@@ -15,10 +15,22 @@ import {
   Sparkles,
   Power,
   PowerOff,
+  Instagram,
 } from "lucide-react";
 
 // API Base URL
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
+
+// Interface für den Instagram Account
+interface InstagramAccount {
+  id: string;
+  username: string;
+  profile_picture_url: string | null;
+  is_active: boolean;
+  auto_reply_enabled: boolean;
+  conversation_count: number;
+  unread_count: number;
+}
 
 interface Stats {
   total_messages: number;
@@ -38,6 +50,7 @@ const Index = () => {
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [aiEnabled, setAiEnabled] = useState(true);
   const [togglingAI, setTogglingAI] = useState(false);
+  const [account, setAccount] = useState<InstagramAccount | null>(null);
 
   // Fetch stats
   const fetchStats = async () => {
@@ -98,6 +111,23 @@ const Index = () => {
     }
   };
 
+  // Fetch connected Instagram account
+  const fetchAccount = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/v1/accounts`);
+      if (response.ok) {
+        const data = await response.json();
+        // Nehme den ersten Account (falls vorhanden)
+        if (data.accounts && data.accounts.length > 0) {
+          setAccount(data.accounts[0]);
+          setAiEnabled(data.accounts[0].auto_reply_enabled);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching account:", error);
+    }
+  };
+
   // Toggle global AI
   const toggleGlobalAI = async () => {
     setTogglingAI(true);
@@ -123,7 +153,7 @@ const Index = () => {
 
   useEffect(() => {
     fetchStats();
-    fetchAccountStatus();
+    fetchAccount();
     const interval = setInterval(fetchStats, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -243,11 +273,43 @@ const Index = () => {
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-8 py-5">
           <div className="flex items-center justify-between max-w-6xl mx-auto">
-            <div>
-              <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-              <p className="text-slate-500 text-sm mt-0.5">
-                Übersicht über deine Instagram DMs
-              </p>
+            <div className="flex items-center gap-4">
+              {/* Account Info */}
+              {account ? (
+                <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
+                  {account.profile_picture_url ? (
+                    <img 
+                      src={account.profile_picture_url} 
+                      alt={account.username}
+                      className="w-10 h-10 rounded-full border-2 border-pink-500"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-full flex items-center justify-center">
+                      <Instagram className="w-5 h-5 text-white" />
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-semibold text-slate-800">@{account.username}</p>
+                    <p className="text-xs text-slate-500">Instagram verbunden</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 pr-4 border-r border-slate-200">
+                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center">
+                    <Instagram className="w-5 h-5 text-slate-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-500">Kein Account</p>
+                    <p className="text-xs text-slate-400">Warte auf Verbindung</p>
+                  </div>
+                </div>
+              )}
+              <div>
+                <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+                <p className="text-slate-500 text-sm mt-0.5">
+                  Übersicht über deine Instagram DMs
+                </p>
+              </div>
             </div>
             <div className="flex items-center gap-3">
               {/* Global AI Toggle */}
