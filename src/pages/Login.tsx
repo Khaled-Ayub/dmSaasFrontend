@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { MessageSquare, Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import {
+  ChatBubbleLeftRightIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+  UserIcon,
+  ArrowRightIcon,
+  EyeIcon,
+  EyeSlashIcon,
+} from "@heroicons/react/24/outline";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -44,24 +52,24 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-base-100 flex">
       {/* Left Side - Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-md">
+              <img src="/logo.png" alt="DMAuto" className="w-8 h-8 rounded-lg" />
             </div>
-            <span className="text-xl font-semibold text-foreground">DMAuto</span>
+            <span className="text-xl font-semibold">DMAuto</span>
           </Link>
 
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">
               {isSignup ? "Account erstellen" : "Willkommen zurück"}
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-base-content/60">
               {isSignup 
                 ? "Starten Sie noch heute mit DMAuto" 
                 : "Melden Sie sich an, um fortzufahren"}
@@ -72,11 +80,11 @@ const Login = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {isSignup && (
               <div className="animate-fade-in">
-                <label htmlFor="name" className="block text-sm font-medium text-foreground mb-2">
+                <label htmlFor="name" className="block text-sm font-medium mb-2">
                   Vollständiger Name
                 </label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
                   <input
                     type="text"
                     id="name"
@@ -84,7 +92,7 @@ const Login = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     placeholder="Max Mustermann"
-                    className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    className="input input-bordered w-full pl-12 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
                     required={isSignup}
                   />
                 </div>
@@ -92,11 +100,11 @@ const Login = () => {
             )}
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+              <label htmlFor="email" className="block text-sm font-medium mb-2">
                 E-Mail Adresse
               </label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <EnvelopeIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
                 <input
                   type="email"
                   id="email"
@@ -104,18 +112,18 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="name@beispiel.de"
-                  className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="input input-bordered w-full pl-12 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
                   required
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-foreground mb-2">
+              <label htmlFor="password" className="block text-sm font-medium mb-2">
                 Passwort
               </label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                <LockClosedIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-base-content/40" />
                 <input
                   type={showPassword ? "text" : "password"}
                   id="password"
@@ -123,16 +131,16 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleInputChange}
                   placeholder="••••••••"
-                  className="w-full pl-12 pr-12 py-3 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  className="input input-bordered w-full pl-12 pr-12 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
                   required
                   minLength={8}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
                 </button>
               </div>
               {!isSignup && (
@@ -147,31 +155,24 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-all shadow-button hover:shadow-hover disabled:opacity-70 disabled:cursor-not-allowed group"
+              className="btn btn-primary w-full gap-2"
             >
               {isLoading ? (
-                <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                <span className="loading loading-spinner loading-sm"></span>
               ) : (
                 <>
                   {isSignup ? "Account erstellen" : "Anmelden"}
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRightIcon className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
           {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-border"></div>
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-background text-muted-foreground">oder</span>
-            </div>
-          </div>
+          <div className="divider my-8">oder</div>
 
           {/* Social Login */}
-          <button className="w-full flex items-center justify-center gap-3 px-6 py-3 bg-card border border-border rounded-xl font-medium text-foreground hover:bg-secondary transition-colors">
+          <button className="btn btn-outline w-full gap-3">
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -182,7 +183,7 @@ const Login = () => {
           </button>
 
           {/* Toggle */}
-          <p className="text-center mt-8 text-muted-foreground">
+          <p className="text-center mt-8 text-base-content/60">
             {isSignup ? "Bereits registriert?" : "Noch kein Account?"}{" "}
             <button
               type="button"
@@ -197,10 +198,7 @@ const Login = () => {
 
       {/* Right Side - Visual */}
       <div 
-        className="hidden lg:flex flex-1 items-center justify-center p-12 relative overflow-hidden"
-        style={{
-          background: "linear-gradient(135deg, hsl(225, 70%, 65%) 0%, hsl(228, 35%, 25%) 100%)",
-        }}
+        className="hidden lg:flex flex-1 items-center justify-center p-12 relative overflow-hidden bg-gradient-to-br from-primary to-secondary"
       >
         {/* Pattern */}
         <div className="absolute inset-0 opacity-10">
@@ -213,11 +211,11 @@ const Login = () => {
           />
         </div>
 
-        <div className="relative z-10 max-w-md text-center">
+        <div className="relative z-10 max-w-md text-center text-white">
           <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-8">
-            <MessageSquare className="w-10 h-10 text-white" />
+            <ChatBubbleLeftRightIcon className="w-10 h-10" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="text-3xl font-bold mb-4">
             Automatisieren Sie Ihren Instagram-Kundenservice
           </h2>
           <p className="text-white/80 text-lg">
@@ -230,13 +228,13 @@ const Login = () => {
               "DMAuto hat unsere Antwortzeit von 4 Stunden auf unter 5 Minuten reduziert. Unsere Kunden lieben es!"
             </p>
             <div className="flex items-center gap-3">
-              <img 
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=face"
-                alt="Kundenfoto"
-                className="w-10 h-10 rounded-full object-cover"
-              />
+              <div className="avatar placeholder">
+                <div className="w-10 h-10 bg-white/20 rounded-full">
+                  <span className="text-sm">SM</span>
+                </div>
+              </div>
               <div>
-                <p className="text-white font-medium text-sm">Sarah Müller</p>
+                <p className="font-medium text-sm">Sarah Müller</p>
                 <p className="text-white/60 text-xs">E-Commerce Inhaberin</p>
               </div>
             </div>
