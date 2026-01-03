@@ -5,72 +5,65 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
+        // Moderne, professionelle Font-Kombination
+        sans: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
       },
     },
   },
   plugins: [require("daisyui")],
-  // daisyUI Konfiguration
+  // daisyUI Konfiguration mit Premium-Look
   daisyui: {
     themes: [
       {
-        // Eigenes DMAuto Theme
+        // Elegantes Light Theme - Soft & Professional
         dmauto: {
-          "primary": "#3b82f6",          // Blau
+          "primary": "#6366f1",           // Indigo - Modern & Trustworthy
           "primary-content": "#ffffff",
-          "secondary": "#8b5cf6",         // Violett
+          "secondary": "#ec4899",         // Pink - Energetisch
           "secondary-content": "#ffffff",
-          "accent": "#f97316",            // Orange
+          "accent": "#14b8a6",            // Teal - Frisch
           "accent-content": "#ffffff",
-          "neutral": "#1f2937",           // Dark Gray
-          "neutral-content": "#f3f4f6",
-          "base-100": "#ffffff",          // Weiß
-          "base-200": "#f8fafc",          // Sehr helles Grau
-          "base-300": "#e2e8f0",          // Helles Grau
-          "base-content": "#1e293b",      // Dunkelgrau Text
-          "info": "#0ea5e9",              // Sky Blue
+          "neutral": "#1e293b",           // Slate 800
+          "neutral-content": "#f8fafc",
+          "base-100": "#ffffff",          // Reines Weiß
+          "base-200": "#f8fafc",          // Slate 50
+          "base-300": "#f1f5f9",          // Slate 100
+          "base-content": "#0f172a",      // Slate 900
+          "info": "#06b6d4",              // Cyan
           "info-content": "#ffffff",
-          "success": "#22c55e",           // Grün
+          "success": "#10b981",           // Emerald
           "success-content": "#ffffff",
-          "warning": "#eab308",           // Gelb
-          "warning-content": "#1f2937",
-          "error": "#ef4444",             // Rot
+          "warning": "#f59e0b",           // Amber
+          "warning-content": "#1e293b",
+          "error": "#ef4444",             // Red
           "error-content": "#ffffff",
         },
       },
       {
-        // Dark Theme
+        // Elegantes Dark Theme - Premium & Sleek
         dmautodark: {
-          "primary": "#60a5fa",           // Hellblau
-          "primary-content": "#1e293b",
-          "secondary": "#a78bfa",         // Hell-Violett
-          "secondary-content": "#1e293b",
-          "accent": "#fb923c",            // Hell-Orange
-          "accent-content": "#1e293b",
-          "neutral": "#374151",           // Gray
-          "neutral-content": "#f9fafb",
-          "base-100": "#0f172a",          // Sehr dunkel
-          "base-200": "#1e293b",          // Dunkel
-          "base-300": "#334155",          // Mittel-Dunkel
-          "base-content": "#f1f5f9",      // Heller Text
-          "info": "#38bdf8",
-          "info-content": "#1e293b",
-          "success": "#4ade80",
-          "success-content": "#1e293b",
-          "warning": "#facc15",
-          "warning-content": "#1e293b",
-          "error": "#f87171",
-          "error-content": "#1e293b",
+          "primary": "#818cf8",           // Indigo 400
+          "primary-content": "#0f172a",
+          "secondary": "#f472b6",         // Pink 400
+          "secondary-content": "#0f172a",
+          "accent": "#2dd4bf",            // Teal 400
+          "accent-content": "#0f172a",
+          "neutral": "#334155",           // Slate 700
+          "neutral-content": "#f8fafc",
+          "base-100": "#0f172a",          // Slate 900
+          "base-200": "#1e293b",          // Slate 800
+          "base-300": "#334155",          // Slate 700
+          "base-content": "#f1f5f9",      // Slate 100
+          "info": "#22d3ee",              // Cyan 400
+          "info-content": "#0f172a",
+          "success": "#34d399",           // Emerald 400
+          "success-content": "#0f172a",
+          "warning": "#fbbf24",           // Amber 400
+          "warning-content": "#0f172a",
+          "error": "#f87171",             // Red 400
+          "error-content": "#0f172a",
         },
       },
-      "light",
-      "dark",
-      "cupcake",
-      "corporate",
-      "synthwave",
-      "cyberpunk",
-      "night",
-      "coffee",
     ],
     darkTheme: "dmautodark",
     base: true,

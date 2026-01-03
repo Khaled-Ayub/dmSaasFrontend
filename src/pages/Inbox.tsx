@@ -18,9 +18,10 @@ import {
   Sun,
   Moon,
   MoreVertical,
+  User,
 } from "lucide-react";
 
-// Types
+// TypeScript Interfaces
 interface Message {
   id: string;
   content: string;
@@ -45,6 +46,7 @@ interface Conversation {
 const API_URL = import.meta.env.VITE_API_URL || "https://dmsaas-production.up.railway.app";
 
 const Inbox = () => {
+  // State
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -69,7 +71,7 @@ const Inbox = () => {
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
-  // Fetch conversations
+  // Fetch Conversations
   const fetchConversations = async () => {
     try {
       const response = await fetch(`${API_URL}/api/v1/conversations/`);
@@ -78,13 +80,13 @@ const Inbox = () => {
         setConversations(data);
       }
     } catch (error) {
-      console.error("Error fetching conversations:", error);
+      console.error("Fehler beim Laden:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Fetch messages
+  // Fetch Messages
   const fetchMessages = async (conversationId: string) => {
     try {
       const response = await fetch(`${API_URL}/api/v1/conversations/${conversationId}/messages`);
@@ -93,11 +95,11 @@ const Inbox = () => {
         setMessages(data);
       }
     } catch (error) {
-      console.error("Error fetching messages:", error);
+      console.error("Fehler beim Laden:", error);
     }
   };
 
-  // Send message
+  // Send Message
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
@@ -114,13 +116,13 @@ const Inbox = () => {
         fetchMessages(selectedConversation.id);
       }
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error("Fehler beim Senden:", error);
     } finally {
       setSending(false);
     }
   };
 
-  // Toggle AI pause
+  // Toggle AI Pause
   const toggleAIPause = async () => {
     if (!selectedConversation) return;
 
@@ -140,10 +142,11 @@ const Inbox = () => {
         );
       }
     } catch (error) {
-      console.error("Error toggling AI pause:", error);
+      console.error("Fehler:", error);
     }
   };
 
+  // Effects
   useEffect(() => {
     fetchConversations();
     const interval = setInterval(fetchConversations, 10000);
@@ -162,11 +165,13 @@ const Inbox = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Filtered Conversations
   const filteredConversations = conversations.filter((conv) => {
     const name = conv.participant_name || conv.participant_username || conv.participant_ig_id;
     return name.toLowerCase().includes(searchQuery.toLowerCase());
   });
 
+  // Helper Functions
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -180,7 +185,11 @@ const Inbox = () => {
     return date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
   };
 
-  const getInitials = (conv: Conversation) => {
+  const getDisplayName = (conv: Conversation) => {
+    return conv.participant_name || conv.participant_username || `User ${conv.participant_ig_id.slice(-4)}`;
+  };
+
+  const getInitial = (conv: Conversation) => {
     const name = conv.participant_name || conv.participant_username;
     if (name) return name.charAt(0).toUpperCase();
     return conv.participant_ig_id.slice(-2).toUpperCase();
@@ -188,117 +197,126 @@ const Inbox = () => {
 
   return (
     <div className="h-screen bg-base-200 flex flex-col">
-      {/* Desktop Navbar - nur auf Desktop */}
-      <div className="navbar bg-base-100 shadow-sm hidden md:flex">
+      {/* ========== DESKTOP NAVBAR ========== */}
+      <div className="navbar bg-base-100/80 backdrop-blur-xl border-b border-base-300/50 hidden md:flex">
         <div className="navbar-start">
-          <Link to="/" className="btn btn-ghost gap-2">
-            <img src="/logo.png" alt="DMAuto" className="w-8 h-8 rounded-lg" />
+          <Link to="/" className="btn btn-ghost gap-2 hover:bg-transparent">
+            <div className="w-9 h-9 rounded-xl bg-gradient-primary flex items-center justify-center shadow-md">
+              <img src="/logo.png" alt="DMAuto" className="w-7 h-7 rounded-lg" />
+            </div>
             <span className="font-bold text-lg">DMAuto</span>
           </Link>
         </div>
         
         <div className="navbar-center">
-          <ul className="menu menu-horizontal px-1 gap-1">
-            <li><Link to="/dashboard"><LayoutDashboard className="w-4 h-4" />Dashboard</Link></li>
-            <li><Link to="/inbox" className="active"><InboxIcon className="w-4 h-4" />Inbox</Link></li>
-            <li><Link to="/settings"><Settings className="w-4 h-4" />Einstellungen</Link></li>
+          <ul className="menu menu-horizontal gap-1">
+            <li><Link to="/dashboard" className="hover:bg-base-200"><LayoutDashboard className="w-4 h-4" />Dashboard</Link></li>
+            <li><Link to="/inbox" className="bg-primary/10 text-primary font-medium"><InboxIcon className="w-4 h-4" />Inbox</Link></li>
+            <li><Link to="/settings" className="hover:bg-base-200"><Settings className="w-4 h-4" />Einstellungen</Link></li>
           </ul>
         </div>
 
         <div className="navbar-end gap-2">
-          <button onClick={toggleTheme} className="btn btn-ghost btn-circle">
+          <button onClick={toggleTheme} className="btn btn-ghost btn-circle btn-sm">
             {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Main Chat Layout */}
+      {/* ========== MAIN CHAT LAYOUT ========== */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Conversations List */}
-        <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 bg-base-100 flex-col border-r border-base-300`}>
+        {/* ========== CONVERSATIONS SIDEBAR ========== */}
+        <div className={`${selectedConversation ? 'hidden md:flex' : 'flex'} w-full md:w-80 lg:w-96 bg-base-100 flex-col border-r border-base-300/50`}>
           {/* Search Header */}
-          <div className="p-4 border-b border-base-300">
-            <div className="flex items-center justify-between mb-3">
+          <div className="p-4 border-b border-base-300/50">
+            <div className="flex items-center justify-between mb-4">
               <h1 className="text-xl font-bold">Chats</h1>
               <button onClick={fetchConversations} className="btn btn-ghost btn-sm btn-circle">
                 <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
               </button>
             </div>
-            <div className="join w-full">
-              <div className="join-item flex items-center pl-3 bg-base-200 rounded-l-lg">
-                <Search className="w-4 h-4 text-base-content/50" />
-              </div>
+            
+            {/* Search Input */}
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-base-content/40" />
               <input
                 type="text"
                 placeholder="Suchen..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="input input-sm bg-base-200 join-item flex-1 focus:outline-none"
+                className="input input-bordered w-full pl-10 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
               />
             </div>
           </div>
 
-          {/* Conversations */}
+          {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
             {loading ? (
-              <div className="flex justify-center py-8">
+              <div className="flex justify-center py-12">
                 <span className="loading loading-spinner loading-lg text-primary"></span>
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare className="w-12 h-12 mx-auto text-base-content/30 mb-3" />
-                <p className="text-base-content/60">Keine Gespräche</p>
+              <div className="text-center py-12 px-4">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-base-200 flex items-center justify-center">
+                  <MessageSquare className="w-8 h-8 text-base-content/30" />
+                </div>
+                <p className="font-medium text-base-content/70">Keine Gespräche</p>
+                <p className="text-sm text-base-content/50 mt-1">Neue Nachrichten erscheinen hier</p>
               </div>
             ) : (
-              <ul className="menu p-2 gap-1">
+              <div className="p-2 space-y-1">
                 {filteredConversations.map((conv) => (
-                  <li key={conv.id}>
-                    <button
-                      onClick={() => setSelectedConversation(conv)}
-                      className={`flex items-center gap-3 p-3 ${selectedConversation?.id === conv.id ? "active" : ""}`}
-                    >
-                      <div className="avatar placeholder">
-                        <div className="bg-gradient-to-br from-primary to-secondary text-primary-content rounded-full w-10">
-                          <span>{getInitials(conv)}</span>
-                        </div>
+                  <button
+                    key={conv.id}
+                    onClick={() => setSelectedConversation(conv)}
+                    className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all text-left ${
+                      selectedConversation?.id === conv.id 
+                        ? "bg-primary/10 border border-primary/20" 
+                        : "hover:bg-base-200/70"
+                    }`}
+                  >
+                    {/* Avatar */}
+                    <div className="avatar placeholder">
+                      <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-12 h-12 shadow-sm">
+                        <span className="text-lg font-medium">{getInitial(conv)}</span>
                       </div>
-                      <div className="flex-1 min-w-0 text-left">
-                        <div className="flex items-center justify-between">
-                          <span className="font-medium truncate">
-                            {conv.participant_name || conv.participant_username || `User ${conv.participant_ig_id.slice(-4)}`}
+                    </div>
+                    
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-semibold truncate">{getDisplayName(conv)}</span>
+                        <span className="text-xs text-base-content/50 flex-shrink-0">{formatTime(conv.last_message_at)}</span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-1">
+                        {conv.ai_paused ? (
+                          <span className="badge badge-warning badge-xs gap-1">
+                            <Pause className="w-2 h-2" /> Manuell
                           </span>
-                          <span className="text-xs text-base-content/50">{formatTime(conv.last_message_at)}</span>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          {conv.ai_paused ? (
-                            <span className="badge badge-warning badge-xs gap-1">
-                              <Pause className="w-2 h-2" /> Manuell
-                            </span>
-                          ) : conv.needs_human_review ? (
-                            <span className="badge badge-error badge-xs">Wichtig</span>
-                          ) : (
-                            <span className="badge badge-success badge-xs gap-1">
-                              <Bot className="w-2 h-2" /> KI
-                            </span>
-                          )}
-                          {!conv.is_read && <span className="badge badge-primary badge-xs"></span>}
-                        </div>
+                        ) : conv.needs_human_review ? (
+                          <span className="badge badge-error badge-xs">Wichtig</span>
+                        ) : (
+                          <span className="badge badge-success badge-xs gap-1">
+                            <Bot className="w-2 h-2" /> KI
+                          </span>
+                        )}
+                        {!conv.is_read && <span className="w-2 h-2 rounded-full bg-primary"></span>}
                       </div>
-                    </button>
-                  </li>
+                    </div>
+                  </button>
                 ))}
-              </ul>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Chat Area */}
+        {/* ========== CHAT AREA ========== */}
         <div className={`${selectedConversation ? 'flex' : 'hidden md:flex'} flex-1 flex-col bg-base-100`}>
           {selectedConversation ? (
             <>
               {/* Chat Header */}
-              <div className="navbar bg-base-100 border-b border-base-300 min-h-0 px-4 py-2">
-                <div className="navbar-start gap-2">
+              <div className="flex items-center justify-between px-4 py-3 bg-base-100 border-b border-base-300/50">
+                <div className="flex items-center gap-3">
                   <button
                     onClick={() => setSelectedConversation(null)}
                     className="btn btn-ghost btn-sm btn-circle md:hidden"
@@ -306,21 +324,24 @@ const Inbox = () => {
                     <ArrowLeft className="w-5 h-5" />
                   </button>
                   <div className="avatar placeholder">
-                    <div className="bg-gradient-to-br from-primary to-secondary text-primary-content rounded-full w-10">
-                      <span>{getInitials(selectedConversation)}</span>
+                    <div className="bg-gradient-to-br from-primary to-secondary text-white rounded-full w-10 h-10 shadow-sm">
+                      <span>{getInitial(selectedConversation)}</span>
                     </div>
                   </div>
                   <div>
-                    <p className="font-semibold text-sm">
-                      {selectedConversation.participant_name || selectedConversation.participant_username || `User ${selectedConversation.participant_ig_id.slice(-4)}`}
-                    </p>
+                    <p className="font-semibold">{getDisplayName(selectedConversation)}</p>
                     <p className="text-xs text-base-content/50">Instagram</p>
                   </div>
                 </div>
-                <div className="navbar-end gap-1">
+                
+                <div className="flex items-center gap-2">
                   <button
                     onClick={toggleAIPause}
-                    className={`btn btn-sm gap-1 ${selectedConversation.ai_paused ? "btn-warning" : "btn-success"}`}
+                    className={`btn btn-sm gap-2 ${
+                      selectedConversation.ai_paused 
+                        ? "bg-warning/10 text-warning hover:bg-warning/20 border-warning/20" 
+                        : "bg-success/10 text-success hover:bg-success/20 border-success/20"
+                    }`}
                   >
                     {selectedConversation.ai_paused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
                     <span className="hidden sm:inline">{selectedConversation.ai_paused ? "KI aktivieren" : "Manuell"}</span>
@@ -329,36 +350,43 @@ const Inbox = () => {
                     <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle">
                       <MoreVertical className="w-4 h-4" />
                     </button>
-                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-lg">
-                      <li><a>Als ungelesen markieren</a></li>
-                      <li><a>Archivieren</a></li>
+                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-2xl z-10 w-52 p-2 shadow-xl border border-base-200">
+                      <li><a className="rounded-xl">Als ungelesen markieren</a></li>
+                      <li><a className="rounded-xl">Archivieren</a></li>
                     </ul>
                   </div>
                 </div>
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-base-200/50">
-                {messages.map((message) => (
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-base-200/30 bg-dots">
+                {messages.map((message, index) => (
                   <div
                     key={message.id}
-                    className={`chat ${message.direction === "outbound" ? "chat-end" : "chat-start"} animate-message-in`}
+                    className={`flex ${message.direction === "outbound" ? "justify-end" : "justify-start"} animate-message`}
+                    style={{ animationDelay: `${index * 30}ms` }}
                   >
-                    <div className={`chat-bubble ${
-                      message.direction === "outbound" 
-                        ? "chat-bubble-primary" 
-                        : "bg-base-100"
-                    }`}>
-                      {message.content}
-                      {message.is_ai_generated && (
-                        <span className="badge badge-ghost badge-xs gap-1 ml-2">
-                          <Sparkles className="w-2 h-2" /> KI
-                        </span>
-                      )}
-                    </div>
-                    <div className="chat-footer opacity-50 text-xs flex items-center gap-1">
-                      {message.status === "delivered" ? <CheckCheck className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
-                      {formatTime(message.created_at)}
+                    <div className={`max-w-[80%] md:max-w-[70%] ${message.direction === "outbound" ? "order-2" : ""}`}>
+                      <div className={`px-4 py-3 rounded-2xl ${
+                        message.direction === "outbound"
+                          ? "bg-primary text-primary-content rounded-br-md"
+                          : "bg-base-100 shadow-sm rounded-bl-md"
+                      }`}>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
+                        {message.is_ai_generated && (
+                          <span className={`inline-flex items-center gap-1 text-xs mt-2 ${
+                            message.direction === "outbound" ? "text-primary-content/70" : "text-base-content/50"
+                          }`}>
+                            <Sparkles className="w-3 h-3" /> KI-generiert
+                          </span>
+                        )}
+                      </div>
+                      <div className={`flex items-center gap-1 mt-1 text-xs text-base-content/40 ${
+                        message.direction === "outbound" ? "justify-end" : ""
+                      }`}>
+                        {message.status === "delivered" && <CheckCheck className="w-3 h-3" />}
+                        {formatTime(message.created_at)}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -366,26 +394,26 @@ const Inbox = () => {
               </div>
 
               {/* Message Input */}
-              <div className="p-4 bg-base-100 border-t border-base-300 safe-area-pb">
+              <div className="p-4 bg-base-100 border-t border-base-300/50 safe-pb">
                 {selectedConversation.ai_paused && (
-                  <div className="alert alert-warning mb-3 py-2">
-                    <Pause className="w-4 h-4" />
-                    <span className="text-sm">Du führst das Gespräch – KI ist pausiert</span>
+                  <div className="alert bg-warning/10 border border-warning/20 mb-3 py-3 rounded-xl">
+                    <Pause className="w-4 h-4 text-warning" />
+                    <span className="text-sm text-warning">Du führst das Gespräch – KI ist pausiert</span>
                   </div>
                 )}
-                <div className="join w-full">
+                <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="Nachricht schreiben..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-                    className="input input-bordered join-item flex-1"
+                    className="input input-bordered flex-1 bg-base-200/50 border-base-300/50 focus:border-primary focus:bg-base-100"
                   />
                   <button
                     onClick={sendMessage}
                     disabled={!newMessage.trim() || sending}
-                    className="btn btn-primary join-item"
+                    className="btn btn-primary btn-square"
                   >
                     {sending ? (
                       <span className="loading loading-spinner loading-sm"></span>
@@ -398,22 +426,33 @@ const Inbox = () => {
             </>
           ) : (
             /* Empty State */
-            <div className="flex-1 flex flex-col items-center justify-center">
-              <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+            <div className="flex-1 flex flex-col items-center justify-center bg-base-200/30 bg-dots">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-6 animate-float">
                 <MessageSquare className="w-10 h-10 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Wähle ein Gespräch</h3>
-              <p className="text-base-content/60">Klicke auf ein Gespräch um die Nachrichten zu sehen</p>
+              <h3 className="text-xl font-bold mb-2">Wähle ein Gespräch</h3>
+              <p className="text-base-content/60 text-center max-w-xs">
+                Klicke auf ein Gespräch in der Liste, um die Nachrichten anzuzeigen
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      {/* Mobile Bottom Nav */}
-      <div className="btm-nav btm-nav-sm md:hidden bg-base-100 border-t border-base-300">
-        <Link to="/dashboard"><LayoutDashboard className="w-5 h-5" /><span className="btm-nav-label text-xs">Dashboard</span></Link>
-        <Link to="/inbox" className="active text-primary"><InboxIcon className="w-5 h-5" /><span className="btm-nav-label text-xs">Inbox</span></Link>
-        <Link to="/settings"><Settings className="w-5 h-5" /><span className="btm-nav-label text-xs">Settings</span></Link>
+      {/* ========== MOBILE BOTTOM NAV ========== */}
+      <div className="btm-nav btm-nav-sm md:hidden bg-base-100/90 backdrop-blur-xl border-t border-base-300/50 safe-pb">
+        <Link to="/dashboard" className="hover:bg-base-200/50">
+          <LayoutDashboard className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">Dashboard</span>
+        </Link>
+        <Link to="/inbox" className="text-primary bg-primary/10">
+          <InboxIcon className="w-5 h-5" />
+          <span className="btm-nav-label text-xs font-medium">Inbox</span>
+        </Link>
+        <Link to="/settings" className="hover:bg-base-200/50">
+          <Settings className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">Settings</span>
+        </Link>
       </div>
     </div>
   );
