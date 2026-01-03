@@ -90,13 +90,13 @@ const Landing = () => {
             </div>
             <div className="flex items-center gap-3">
               <Link 
-                to="/login" 
+                to="/dashboard" 
                 className="px-4 py-2 text-sm font-medium text-foreground hover:bg-secondary/50 rounded-xl transition-colors"
               >
-                Anmelden
+                Dashboard
               </Link>
               <Link 
-                to="/login?signup=true" 
+                to="/dashboard" 
                 className="px-5 py-2.5 text-sm font-medium bg-foreground text-background rounded-xl hover:opacity-90 transition-all shadow-button"
               >
                 Kostenlos starten
@@ -158,10 +158,10 @@ const Landing = () => {
                 style={{ animation: "slide-in-left 0.6s ease-out 0.3s both" }}
               >
                 <Link 
-                  to="/login?signup=true" 
+                  to="/dashboard" 
                   className="group flex items-center gap-3 px-7 py-4 bg-foreground text-background rounded-2xl font-medium hover:scale-105 transition-all shadow-lg hover:shadow-xl"
                 >
-                  14 Tage kostenlos testen
+                  Jetzt ausprobieren
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <button className="flex items-center gap-3 px-6 py-4 text-foreground font-medium hover:bg-secondary/50 rounded-2xl transition-colors group">
@@ -510,10 +510,10 @@ const Landing = () => {
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link 
-                  to="/login?signup=true" 
+                  to="/dashboard" 
                   className="group flex items-center gap-3 px-8 py-4 bg-white text-foreground rounded-2xl font-medium hover:scale-105 transition-all shadow-xl"
                 >
-                  Jetzt kostenlos starten
+                  Zum Dashboard
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a 
