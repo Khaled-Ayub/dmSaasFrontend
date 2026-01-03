@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
-  MessageSquare,
-  Settings as SettingsIcon,
   Bot,
   Save,
   RefreshCw,
   LayoutDashboard,
   Inbox,
+  Settings as SettingsIcon,
   Sparkles,
   AlertCircle,
   CheckCircle,
@@ -15,6 +14,8 @@ import {
   Brain,
   Languages,
   Sliders,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 // Types
@@ -40,6 +41,7 @@ const Settings = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [theme, setTheme] = useState("dmauto");
 
   // Form state
   const [systemPrompt, setSystemPrompt] = useState("");
@@ -50,6 +52,20 @@ const Settings = () => {
   const [temperature, setTemperature] = useState(0.7);
   const [maxTokens, setMaxTokens] = useState(500);
   const [escalationKeywords, setEscalationKeywords] = useState("");
+
+  // Theme Toggle
+  const toggleTheme = () => {
+    const newTheme = theme === "dmauto" ? "dmautodark" : "dmauto";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dmauto";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
 
   // Fetch settings
   const fetchSettings = async () => {
@@ -129,315 +145,292 @@ const Settings = () => {
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col md:flex-row overflow-hidden">
-      {/* Desktop Sidebar - versteckt auf Mobile */}
-      <aside className="hidden md:flex w-[72px] bg-white border-r border-slate-200/60 flex-col items-center py-4 shadow-sm">
-        {/* Logo */}
-        <Link to="/" className="mb-8">
-          <img src="/logo.png" alt="DMAuto Logo" className="w-11 h-11 rounded-2xl shadow-lg shadow-blue-500/25" />
-        </Link>
-
-        {/* Navigation Icons */}
-        <nav className="flex-1 flex flex-col items-center gap-2">
-          <Link
-            to="/dashboard"
-            className="w-11 h-11 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-all"
-          >
-            <LayoutDashboard className="w-5 h-5" />
+    <div className="min-h-screen bg-base-200">
+      {/* Navbar */}
+      <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+        <div className="navbar-start">
+          <Link to="/" className="btn btn-ghost gap-2">
+            <img src="/logo.png" alt="DMAuto" className="w-8 h-8 rounded-lg" />
+            <span className="font-bold text-lg hidden sm:inline">DMAuto</span>
           </Link>
-          <Link
-            to="/inbox"
-            className="w-11 h-11 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-all"
-          >
-            <Inbox className="w-5 h-5" />
-          </Link>
-          <Link
-            to="/settings"
-            className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center transition-all hover:scale-105"
-          >
-            <SettingsIcon className="w-5 h-5" />
-          </Link>
-        </nav>
-
-        {/* Bottom - AI Status */}
-        <div className="mt-auto flex flex-col items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <Bot className="w-5 h-5" />
-          </div>
         </div>
-      </aside>
+        
+        <div className="navbar-center hidden md:flex">
+          <ul className="menu menu-horizontal px-1 gap-1">
+            <li><Link to="/dashboard"><LayoutDashboard className="w-4 h-4" />Dashboard</Link></li>
+            <li><Link to="/inbox"><Inbox className="w-4 h-4" />Inbox</Link></li>
+            <li><Link to="/settings" className="active"><SettingsIcon className="w-4 h-4" />Einstellungen</Link></li>
+          </ul>
+        </div>
+
+        <div className="navbar-end gap-2">
+          <button onClick={toggleTheme} className="btn btn-ghost btn-circle">
+            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </button>
+          <button
+            onClick={saveSettings}
+            disabled={saving || !settings}
+            className="btn btn-primary btn-sm gap-2"
+          >
+            {saving ? (
+              <span className="loading loading-spinner loading-xs"></span>
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span className="hidden sm:inline">Speichern</span>
+          </button>
+        </div>
+      </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto pb-20 md:pb-0">
-        {/* Header */}
-        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-8 py-4 md:py-5">
-          <div className="flex items-center justify-between max-w-4xl mx-auto">
-            <div className="flex items-center gap-3 md:gap-4">
-              <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/20">
-                <Brain className="w-5 h-5 md:w-6 md:h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg md:text-2xl font-bold text-slate-800">AI-Einstellungen</h1>
-                <p className="text-slate-500 text-xs md:text-sm mt-0.5 hidden sm:block">
-                  Konfiguriere wie deine KI antwortet
-                </p>
-              </div>
-            </div>
-            
-            <button
-              onClick={saveSettings}
-              disabled={saving || !settings}
-              className="flex items-center gap-1.5 md:gap-2 px-3 md:px-5 py-2 md:py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-medium text-xs md:text-sm shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 transition-all disabled:opacity-50 disabled:shadow-none"
-            >
-              {saving ? (
-                <RefreshCw className="w-4 h-4 animate-spin" />
-              ) : (
-                <Save className="w-4 h-4" />
-              )}
-              <span className="hidden sm:inline">Speichern</span>
-            </button>
+      <div className="container mx-auto px-4 py-6 pb-24 md:pb-6 max-w-4xl">
+        {/* Page Header */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-secondary to-accent rounded-xl flex items-center justify-center">
+            <Brain className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">AI-Einstellungen</h1>
+            <p className="text-base-content/60">Konfiguriere wie deine KI antwortet</p>
           </div>
         </div>
 
+        {/* Notifications */}
+        {error && (
+          <div className="alert alert-error mb-6">
+            <AlertCircle className="w-5 h-5" />
+            <span>{error}</span>
+          </div>
+        )}
+        {saved && (
+          <div className="alert alert-success mb-6">
+            <CheckCircle className="w-5 h-5" />
+            <span>Einstellungen erfolgreich gespeichert!</span>
+          </div>
+        )}
+
         {loading ? (
-          <div className="flex items-center justify-center h-64">
-            <RefreshCw className="w-8 h-8 text-slate-400 animate-spin" />
+          <div className="flex justify-center py-12">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
           </div>
         ) : (
-          <div className="p-4 md:p-8 max-w-4xl mx-auto">
-            {/* Notifications */}
-            {error && (
-              <div className="mb-6 p-4 bg-rose-50 border border-rose-200/60 rounded-xl flex items-center gap-3 text-rose-700">
-                <AlertCircle className="w-5 h-5" />
-                {error}
-              </div>
-            )}
-            {saved && (
-              <div className="mb-6 p-4 bg-emerald-50 border border-emerald-200/60 rounded-xl flex items-center gap-3 text-emerald-700">
-                <CheckCircle className="w-5 h-5" />
-                Einstellungen erfolgreich gespeichert!
-              </div>
-            )}
-
-            {/* System Prompt Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 mb-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-purple-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-800">System Prompt</h3>
-                  <p className="text-sm text-slate-500">Die Haupt-Anweisungen für die KI</p>
-                </div>
-              </div>
-              <textarea
-                value={systemPrompt}
-                onChange={(e) => setSystemPrompt(e.target.value)}
-                rows={5}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none resize-none transition-all"
-                placeholder="Du bist ein freundlicher Kundenservice-Assistent..."
-              />
-            </div>
-
-            {/* Personality & Context Cards */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm">
+          <div className="space-y-6">
+            {/* System Prompt */}
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-amber-600" />
+                  <div className="w-10 h-10 bg-secondary/10 rounded-lg flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-secondary" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-slate-800">Persönlichkeit</h3>
-                    <p className="text-sm text-slate-500">Wie soll die KI klingen?</p>
+                    <h3 className="font-semibold">System Prompt</h3>
+                    <p className="text-sm text-base-content/60">Die Haupt-Anweisungen für die KI</p>
                   </div>
                 </div>
-                <input
-                  type="text"
-                  value={personality}
-                  onChange={(e) => setPersonality(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none transition-all"
-                  placeholder="freundlich, hilfsbereit und professionell"
+                <textarea
+                  value={systemPrompt}
+                  onChange={(e) => setSystemPrompt(e.target.value)}
+                  rows={5}
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Du bist ein freundlicher Kundenservice-Assistent..."
                 />
               </div>
-
-              <div className="bg-white rounded-2xl border border-slate-200/60 p-6 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                    <Languages className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800">Sprache</h3>
-                    <p className="text-sm text-slate-500">Antwortsprache</p>
-                  </div>
-                </div>
-                <select
-                  value={language}
-                  onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none transition-all"
-                >
-                  <option value="de">Deutsch</option>
-                  <option value="en">English</option>
-                  <option value="fr">Français</option>
-                  <option value="es">Español</option>
-                </select>
-              </div>
             </div>
 
-            {/* Business Context Card */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 mb-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-800">Business-Kontext</h3>
-                  <p className="text-sm text-slate-500">Infos über dein Business (Produkte, FAQ, Öffnungszeiten...)</p>
-                </div>
-              </div>
-              <textarea
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                rows={6}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none resize-none transition-all"
-                placeholder="Unser Shop verkauft handgemachte Schmuckstücke. Lieferzeit: 2-3 Werktage. Rückgabe innerhalb 14 Tagen möglich..."
-              />
-            </div>
-
-            {/* Model & Advanced Settings */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-6 mb-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center">
-                  <Sliders className="w-5 h-5 text-indigo-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-slate-800">Erweiterte Einstellungen</h3>
-                  <p className="text-sm text-slate-500">Modell und Parameter</p>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    KI-Modell
-                  </label>
-                  <select
-                    value={model}
-                    onChange={(e) => setModel(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none transition-all"
-                  >
-                    {models.map((m) => (
-                      <option key={m.value} value={m.value}>
-                        {m.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">
-                    Eskalations-Keywords
-                  </label>
+            {/* Personality & Language */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div className="card bg-base-100 shadow-sm">
+                <div className="card-body">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-warning/10 rounded-lg flex items-center justify-center">
+                      <Bot className="w-5 h-5 text-warning" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Persönlichkeit</h3>
+                      <p className="text-sm text-base-content/60">Wie soll die KI klingen?</p>
+                    </div>
+                  </div>
                   <input
                     type="text"
-                    value={escalationKeywords}
-                    onChange={(e) => setEscalationKeywords(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300 focus:outline-none transition-all"
-                    placeholder="beschwerde, anwalt, rückerstattung"
+                    value={personality}
+                    onChange={(e) => setPersonality(e.target.value)}
+                    className="input input-bordered w-full"
+                    placeholder="freundlich, hilfsbereit und professionell"
                   />
                 </div>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    Temperatur: <span className="text-blue-600">{temperature}</span>
-                    <span className="ml-2 text-xs font-normal text-slate-500">
-                      (0 = präzise, 1 = kreativ)
-                    </span>
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={temperature}
-                    onChange={(e) => setTemperature(parseFloat(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
+              <div className="card bg-base-100 shadow-sm">
+                <div className="card-body">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-info/10 rounded-lg flex items-center justify-center">
+                      <Languages className="w-5 h-5 text-info" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">Sprache</h3>
+                      <p className="text-sm text-base-content/60">Antwortsprache</p>
+                    </div>
+                  </div>
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value)}
+                    className="select select-bordered w-full"
+                  >
+                    <option value="de">Deutsch</option>
+                    <option value="en">English</option>
+                    <option value="fr">Français</option>
+                    <option value="es">Español</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Business Context */}
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-success" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Business-Kontext</h3>
+                    <p className="text-sm text-base-content/60">Infos über dein Business (Produkte, FAQ, Öffnungszeiten...)</p>
+                  </div>
+                </div>
+                <textarea
+                  value={context}
+                  onChange={(e) => setContext(e.target.value)}
+                  rows={6}
+                  className="textarea textarea-bordered w-full"
+                  placeholder="Unser Shop verkauft handgemachte Schmuckstücke. Lieferzeit: 2-3 Werktage..."
+                />
+              </div>
+            </div>
+
+            {/* Model & Advanced */}
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    <Sliders className="w-5 h-5 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Erweiterte Einstellungen</h3>
+                    <p className="text-sm text-base-content/60">Modell und Parameter</p>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-3">
-                    Max Tokens: <span className="text-blue-600">{maxTokens}</span>
-                  </label>
-                  <input
-                    type="range"
-                    min="100"
-                    max="2000"
-                    step="100"
-                    value={maxTokens}
-                    onChange={(e) => setMaxTokens(parseInt(e.target.value))}
-                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                  />
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">KI-Modell</span>
+                    </label>
+                    <select
+                      value={model}
+                      onChange={(e) => setModel(e.target.value)}
+                      className="select select-bordered"
+                    >
+                      {models.map((m) => (
+                        <option key={m.value} value={m.value}>{m.label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Eskalations-Keywords</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={escalationKeywords}
+                      onChange={(e) => setEscalationKeywords(e.target.value)}
+                      className="input input-bordered"
+                      placeholder="beschwerde, anwalt, rückerstattung"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6 mt-6">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Temperatur</span>
+                      <span className="label-text-alt badge badge-primary">{temperature}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.1"
+                      value={temperature}
+                      onChange={(e) => setTemperature(parseFloat(e.target.value))}
+                      className="range range-primary range-sm"
+                    />
+                    <div className="flex justify-between text-xs text-base-content/50 mt-1">
+                      <span>Präzise</span>
+                      <span>Kreativ</span>
+                    </div>
+                  </div>
+
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-medium">Max Tokens</span>
+                      <span className="label-text-alt badge badge-primary">{maxTokens}</span>
+                    </label>
+                    <input
+                      type="range"
+                      min="100"
+                      max="2000"
+                      step="100"
+                      value={maxTokens}
+                      onChange={(e) => setMaxTokens(parseInt(e.target.value))}
+                      className="range range-primary range-sm"
+                    />
+                    <div className="flex justify-between text-xs text-base-content/50 mt-1">
+                      <span>100</span>
+                      <span>2000</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Tips Card */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
-              <h4 className="font-semibold mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5" />
-                Tipps für gute Prompts
-              </h4>
-              <ul className="text-sm text-blue-100 space-y-2">
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-300">•</span>
-                  Sei spezifisch: Beschreibe genau, wie die KI antworten soll
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-300">•</span>
-                  Füge Kontext hinzu: Je mehr Infos über dein Business, desto besser
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-300">•</span>
-                  Setze Grenzen: Definiere, was die KI NICHT tun soll
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-blue-300">•</span>
-                  Teste regelmäßig: Sende Testnachrichten und passe an
-                </li>
-              </ul>
+            <div className="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-lg">
+              <div className="card-body">
+                <h4 className="font-semibold flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  Tipps für gute Prompts
+                </h4>
+                <ul className="text-sm text-primary-content/80 space-y-2 mt-2">
+                  <li className="flex items-start gap-2">
+                    <span>•</span>
+                    Sei spezifisch: Beschreibe genau, wie die KI antworten soll
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span>•</span>
+                    Füge Kontext hinzu: Je mehr Infos über dein Business, desto besser
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span>•</span>
+                    Setze Grenzen: Definiere, was die KI NICHT tun soll
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span>•</span>
+                    Teste regelmäßig: Sende Testnachrichten und passe an
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         )}
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2 safe-area-pb">
-        <div className="flex items-center justify-around">
-          <Link
-            to="/dashboard"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-xs font-medium">Dashboard</span>
-          </Link>
-          <Link
-            to="/inbox"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
-          >
-            <Inbox className="w-5 h-5" />
-            <span className="text-xs font-medium">Inbox</span>
-          </Link>
-          <Link
-            to="/settings"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-blue-600"
-          >
-            <SettingsIcon className="w-5 h-5" />
-            <span className="text-xs font-medium">Settings</span>
-          </Link>
-        </div>
-      </nav>
+      <div className="btm-nav btm-nav-sm md:hidden bg-base-100 border-t border-base-300">
+        <Link to="/dashboard"><LayoutDashboard className="w-5 h-5" /><span className="btm-nav-label text-xs">Dashboard</span></Link>
+        <Link to="/inbox"><Inbox className="w-5 h-5" /><span className="btm-nav-label text-xs">Inbox</span></Link>
+        <Link to="/settings" className="active text-primary"><SettingsIcon className="w-5 h-5" /><span className="btm-nav-label text-xs">Settings</span></Link>
+      </div>
     </div>
   );
 };

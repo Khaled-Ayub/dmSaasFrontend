@@ -16,6 +16,9 @@ import {
   Power,
   PowerOff,
   Instagram,
+  TrendingUp,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 // API Base URL
@@ -51,6 +54,22 @@ const Index = () => {
   const [aiEnabled, setAiEnabled] = useState(true);
   const [togglingAI, setTogglingAI] = useState(false);
   const [account, setAccount] = useState<InstagramAccount | null>(null);
+  const [theme, setTheme] = useState("dmauto");
+
+  // Theme Toggle
+  const toggleTheme = () => {
+    const newTheme = theme === "dmauto" ? "dmautodark" : "dmauto";
+    setTheme(newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+  };
+
+  // Load theme on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme") || "dmauto";
+    setTheme(savedTheme);
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  }, []);
 
   // Fetch stats
   const fetchStats = async () => {
@@ -95,29 +114,12 @@ const Index = () => {
     }
   };
 
-  // Fetch account status (global AI toggle)
-  const fetchAccountStatus = async () => {
-    try {
-      const response = await fetch(`${API_URL}/api/v1/account/status`);
-      if (response.ok) {
-        const data = await response.json();
-        setAiEnabled(data.auto_reply_enabled);
-      } else if (response.status === 404) {
-        // Kein Account vorhanden - Standard: AI aktiviert
-        setAiEnabled(true);
-      }
-    } catch (error) {
-      console.error("Error fetching account status:", error);
-    }
-  };
-
   // Fetch connected Instagram account
   const fetchAccount = async () => {
     try {
       const response = await fetch(`${API_URL}/api/v1/accounts`);
       if (response.ok) {
         const data = await response.json();
-        // Nehme den ersten Account (falls vorhanden)
         if (data.accounts && data.accounts.length > 0) {
           setAccount(data.accounts[0]);
           setAiEnabled(data.accounts[0].auto_reply_enabled);
@@ -140,9 +142,6 @@ const Index = () => {
 
       if (response.ok) {
         setAiEnabled(!aiEnabled);
-      } else if (response.status === 404) {
-        // Kein Account vorhanden - zeige Hinweis
-        alert("Noch kein Instagram-Account verbunden. Der Account wird automatisch erstellt, wenn du die erste Nachricht erhältst.");
       }
     } catch (error) {
       console.error("Error toggling AI:", error);
@@ -172,306 +171,265 @@ const Index = () => {
     return date.toLocaleDateString("de-DE");
   };
 
-  const getAvatarColor = (id: string) => {
-    const colors = [
-      "from-blue-500 to-cyan-400",
-      "from-purple-500 to-pink-400",
-      "from-orange-500 to-yellow-400",
-      "from-green-500 to-emerald-400",
-      "from-rose-500 to-red-400",
-    ];
-    if (!id) return colors[0];
-    const index = id.charCodeAt(id.length - 1) % colors.length;
-    return colors[index];
-  };
-
   const statCards = [
     {
-      label: "Nachrichten Gesamt",
+      label: "Nachrichten",
       value: stats.total_messages,
       icon: MessageSquare,
-      gradient: "from-blue-500 to-indigo-500",
-      bgGradient: "from-blue-50 to-indigo-50",
+      color: "primary",
     },
     {
       label: "KI-Antworten",
       value: stats.ai_messages,
       icon: Sparkles,
-      gradient: "from-purple-500 to-pink-500",
-      bgGradient: "from-purple-50 to-pink-50",
+      color: "secondary",
     },
     {
       label: "Gespräche",
       value: stats.conversations,
       icon: Users,
-      gradient: "from-emerald-500 to-teal-500",
-      bgGradient: "from-emerald-50 to-teal-50",
+      color: "accent",
     },
     {
-      label: "Ø Antwortzeit",
+      label: "Antwortzeit",
       value: stats.avg_response_time,
       icon: Zap,
-      gradient: "from-amber-500 to-orange-500",
-      bgGradient: "from-amber-50 to-orange-50",
+      color: "warning",
     },
   ];
 
   return (
-    <div className="h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 flex flex-col md:flex-row overflow-hidden">
-      {/* Desktop Sidebar - versteckt auf Mobile */}
-      <aside className="hidden md:flex w-[72px] bg-white border-r border-slate-200/60 flex-col items-center py-4 shadow-sm">
-        {/* Logo */}
-        <Link to="/" className="mb-8">
-          <img src="/logo.png" alt="DMAuto Logo" className="w-11 h-11 rounded-2xl shadow-lg shadow-blue-500/25" />
-        </Link>
+    <div className="min-h-screen bg-base-200">
+      {/* Navbar */}
+      <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+        <div className="navbar-start">
+          <Link to="/" className="btn btn-ghost gap-2">
+            <img src="/logo.png" alt="DMAuto" className="w-8 h-8 rounded-lg" />
+            <span className="font-bold text-lg hidden sm:inline">DMAuto</span>
+          </Link>
+        </div>
+        
+        <div className="navbar-center hidden md:flex">
+          <ul className="menu menu-horizontal px-1 gap-1">
+            <li>
+              <Link to="/dashboard" className="active">
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <Link to="/inbox">
+                <Inbox className="w-4 h-4" />
+                Inbox
+              </Link>
+            </li>
+            <li>
+              <Link to="/settings">
+                <Settings className="w-4 h-4" />
+                Einstellungen
+              </Link>
+            </li>
+          </ul>
+        </div>
 
-        {/* Navigation Icons */}
-        <nav className="flex-1 flex flex-col items-center gap-2">
-          <Link
-            to="/dashboard"
-            className="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center transition-all hover:scale-105"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-          </Link>
-          <Link
-            to="/inbox"
-            className="w-11 h-11 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-all"
-          >
-            <Inbox className="w-5 h-5" />
-          </Link>
-          <Link
-            to="/settings"
-            className="w-11 h-11 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-all"
-          >
-            <Settings className="w-5 h-5" />
-          </Link>
-        </nav>
-
-        {/* Bottom - AI Status Indicator */}
-        <div className="mt-auto flex flex-col items-center gap-3">
+        <div className="navbar-end gap-2">
+          {/* Theme Toggle */}
+          <button onClick={toggleTheme} className="btn btn-ghost btn-circle">
+            {theme === "dmauto" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+          </button>
+          
+          {/* AI Toggle */}
           <button
             onClick={toggleGlobalAI}
             disabled={togglingAI}
-            className={`w-11 h-11 rounded-xl flex items-center justify-center transition-all ${
-              aiEnabled
-                ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
-                : "bg-rose-50 text-rose-600 hover:bg-rose-100"
-            }`}
-            title={aiEnabled ? "KI aktiv - Klicken zum Deaktivieren" : "KI deaktiviert - Klicken zum Aktivieren"}
+            className={`btn btn-sm gap-2 ${aiEnabled ? "btn-success" : "btn-error"}`}
           >
             {togglingAI ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
+              <span className="loading loading-spinner loading-xs"></span>
+            ) : aiEnabled ? (
+              <Power className="w-4 h-4" />
             ) : (
-              <Bot className="w-5 h-5" />
+              <PowerOff className="w-4 h-4" />
             )}
+            <span className="hidden sm:inline">{aiEnabled ? "KI aktiv" : "KI aus"}</span>
           </button>
-        </div>
-      </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-slate-200/60 px-4 md:px-8 py-4 md:py-5">
-          <div className="flex items-center justify-between max-w-6xl mx-auto">
-            <div className="flex items-center gap-3 md:gap-4">
-              {/* Account Info */}
-              {account ? (
-                <div className="flex items-center gap-2 md:gap-3 md:pr-4 md:border-r border-slate-200">
+          {/* Account Avatar */}
+          {account && (
+            <div className="dropdown dropdown-end">
+              <div tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                <div className="w-10 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                   {account.profile_picture_url ? (
-                    <img 
-                      src={account.profile_picture_url} 
-                      alt={account.username}
-                      className="w-9 h-9 md:w-10 md:h-10 rounded-full border-2 border-pink-500"
-                    />
+                    <img src={account.profile_picture_url} alt={account.username} />
                   ) : (
-                    <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-full flex items-center justify-center">
-                      <Instagram className="w-4 h-4 md:w-5 md:h-5 text-white" />
+                    <div className="bg-gradient-to-br from-purple-500 to-pink-500 w-full h-full flex items-center justify-center">
+                      <Instagram className="w-5 h-5 text-white" />
                     </div>
                   )}
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-semibold text-slate-800">@{account.username}</p>
-                    <p className="text-xs text-slate-500">Instagram verbunden</p>
-                  </div>
                 </div>
-              ) : (
-                <div className="flex items-center gap-2 md:gap-3 md:pr-4 md:border-r border-slate-200">
-                  <div className="w-9 h-9 md:w-10 md:h-10 bg-slate-100 rounded-full flex items-center justify-center">
-                    <Instagram className="w-4 h-4 md:w-5 md:h-5 text-slate-400" />
-                  </div>
-                  <div className="hidden sm:block">
-                    <p className="text-sm font-medium text-slate-500">Kein Account</p>
-                    <p className="text-xs text-slate-400">Warte auf Verbindung</p>
-                  </div>
-                </div>
-              )}
-              <div>
-                <h1 className="text-lg md:text-2xl font-bold text-slate-800">Dashboard</h1>
-                <p className="text-slate-500 text-xs md:text-sm mt-0.5 hidden sm:block">
-                  Übersicht über deine Instagram DMs
-                </p>
               </div>
+              <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-10 w-52 p-2 shadow-lg">
+                <li className="menu-title">@{account.username}</li>
+                <li><Link to="/settings">Einstellungen</Link></li>
+                <li><a>Abmelden</a></li>
+              </ul>
             </div>
-            <div className="flex items-center gap-2 md:gap-3">
-              {/* Global AI Toggle */}
-              <button
-                onClick={toggleGlobalAI}
-                disabled={togglingAI}
-                className={`flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 rounded-xl text-xs md:text-sm font-medium transition-all ${
-                  aiEnabled
-                    ? "bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
-                    : "bg-rose-50 text-rose-700 hover:bg-rose-100"
-                } ${togglingAI ? "opacity-50" : ""}`}
-              >
-                {togglingAI ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                ) : aiEnabled ? (
-                  <Power className="w-4 h-4" />
-                ) : (
-                  <PowerOff className="w-4 h-4" />
-                )}
-                <span className="hidden sm:inline">{aiEnabled ? "KI aktiv" : "KI deaktiviert"}</span>
-              </button>
+          )}
+        </div>
+      </div>
 
-              <button
-                onClick={fetchStats}
-                className="flex items-center gap-2 p-2 md:px-4 md:py-2.5 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors"
-              >
-                <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
-                <span className="hidden md:inline">Aktualisieren</span>
-              </button>
-            </div>
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6 pb-24 md:pb-6 max-w-7xl">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
+            <p className="text-base-content/60 mt-1">Übersicht über deine Instagram DMs</p>
           </div>
+          <button onClick={fetchStats} className="btn btn-ghost btn-sm gap-2 mt-4 md:mt-0">
+            <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+            Aktualisieren
+          </button>
         </div>
 
-        {/* Content */}
-        <div className="p-4 md:p-8 pb-24 md:pb-8 max-w-6xl mx-auto">
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6 md:mb-8">
-            {statCards.map((stat, index) => {
-              const IconComponent = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className={`bg-gradient-to-br ${stat.bgGradient} rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/60 shadow-sm hover:shadow-md transition-all`}
-                >
-                  <div className="flex items-start justify-between mb-2 md:mb-4">
-                    <div className={`w-9 h-9 md:w-12 md:h-12 bg-gradient-to-br ${stat.gradient} rounded-lg md:rounded-xl flex items-center justify-center shadow-lg`}>
-                      <IconComponent className="w-4 h-4 md:w-6 md:h-6 text-white" />
-                    </div>
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {statCards.map((stat, index) => {
+            const IconComponent = stat.icon;
+            return (
+              <div key={index} className="card bg-base-100 shadow-sm">
+                <div className="card-body p-4">
+                  <div className={`w-10 h-10 rounded-lg bg-${stat.color}/10 flex items-center justify-center mb-2`}>
+                    <IconComponent className={`w-5 h-5 text-${stat.color}`} />
                   </div>
-                  <p className="text-xl md:text-3xl font-bold text-slate-800 mb-0.5 md:mb-1">
-                    {loading ? "..." : stat.value}
-                  </p>
-                  <p className="text-xs md:text-sm text-slate-600">{stat.label}</p>
+                  <div className="stat-value text-2xl md:text-3xl">
+                    {loading ? <span className="loading loading-dots loading-sm"></span> : stat.value}
+                  </div>
+                  <div className="stat-desc text-base-content/60">{stat.label}</div>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            );
+          })}
+        </div>
 
-          {/* Content Grid */}
-          <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Recent Activity */}
-            <div className="lg:col-span-2 bg-white rounded-xl md:rounded-2xl border border-slate-200/60 p-4 md:p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center">
-                    <Activity className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-slate-800">
-                    Letzte Gespräche
-                  </h2>
-                </div>
-                <Link
-                  to="/inbox"
-                  className="text-sm text-blue-600 hover:text-blue-700 flex items-center gap-1 font-medium"
-                >
+        {/* Content Grid */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Recent Conversations */}
+          <div className="lg:col-span-2 card bg-base-100 shadow-sm">
+            <div className="card-body">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="card-title">
+                  <Activity className="w-5 h-5 text-primary" />
+                  Letzte Gespräche
+                </h2>
+                <Link to="/inbox" className="btn btn-ghost btn-sm gap-1">
                   Alle anzeigen
                   <ArrowUpRight className="w-4 h-4" />
                 </Link>
               </div>
 
               {loading ? (
-                <div className="flex items-center justify-center h-40">
-                  <RefreshCw className="w-6 h-6 text-slate-400 animate-spin" />
+                <div className="flex justify-center py-8">
+                  <span className="loading loading-spinner loading-lg text-primary"></span>
                 </div>
               ) : recentActivity.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-slate-400">
-                  <MessageSquare className="w-10 h-10 mb-2 opacity-50" />
-                  <p className="text-sm">Noch keine Gespräche</p>
-                  <p className="text-xs mt-1">
-                    Sende eine Nachricht an deinen Instagram Account
-                  </p>
+                <div className="text-center py-8">
+                  <MessageSquare className="w-12 h-12 mx-auto text-base-content/30 mb-3" />
+                  <p className="text-base-content/60">Noch keine Gespräche</p>
+                  <p className="text-sm text-base-content/40">Sende eine Nachricht an deinen Instagram Account</p>
                 </div>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {recentActivity.map((activity) => (
                     <Link
                       key={activity.id}
                       to="/inbox"
-                      className="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 transition-colors group"
+                      className="flex items-center gap-4 p-3 rounded-lg hover:bg-base-200 transition-colors"
                     >
-                      <div className={`w-11 h-11 bg-gradient-to-br ${getAvatarColor(activity.ig_id || activity.id)} rounded-full flex items-center justify-center text-white font-medium text-sm shadow-sm`}>
-                        {activity.name.charAt(0).toUpperCase()}
+                      <div className="avatar placeholder">
+                        <div className="bg-gradient-to-br from-primary to-secondary text-primary-content rounded-full w-10">
+                          <span>{activity.name.charAt(0).toUpperCase()}</span>
+                        </div>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-700 truncate">
-                          {activity.name}
-                        </p>
-                        <p className="text-sm text-slate-400 flex items-center gap-1">
+                        <p className="font-medium truncate">{activity.name}</p>
+                        <p className="text-sm text-base-content/60 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatTime(activity.time)}
                         </p>
                       </div>
                       {activity.unread && (
-                        <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+                        <span className="badge badge-primary badge-xs"></span>
                       )}
-                      <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 transition-colors" />
                     </Link>
                   ))}
                 </div>
               )}
             </div>
+          </div>
 
-            {/* Quick Actions */}
-            <div className="space-y-5">
-              {/* AI Settings Card */}
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
-                <div className="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center mb-4">
+          {/* Quick Actions */}
+          <div className="space-y-4">
+            {/* AI Card */}
+            <div className="card bg-gradient-to-br from-primary to-secondary text-primary-content shadow-lg">
+              <div className="card-body">
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-2">
                   <Bot className="w-6 h-6" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2">
-                  KI-Prompt anpassen
-                </h3>
-                <p className="text-sm text-blue-100 mb-5">
+                <h3 className="card-title">KI-Prompt anpassen</h3>
+                <p className="text-primary-content/80 text-sm">
                   Konfiguriere wie deine KI auf Nachrichten antwortet
                 </p>
-                <Link
-                  to="/settings"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-white text-blue-600 rounded-xl text-sm font-medium hover:bg-blue-50 transition-colors"
-                >
-                  Einstellungen öffnen
-                  <ArrowUpRight className="w-4 h-4" />
-                </Link>
+                <div className="card-actions justify-end mt-2">
+                  <Link to="/settings" className="btn btn-sm bg-white/20 border-0 hover:bg-white/30">
+                    Einstellungen
+                    <ArrowUpRight className="w-4 h-4" />
+                  </Link>
+                </div>
               </div>
+            </div>
 
-              {/* Tips Card */}
-              <div className="bg-white rounded-2xl p-6 border border-slate-200/60 shadow-sm">
-                <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                  <span className="text-xl">💡</span>
-                  Schnelltipps
+            {/* Stats Card */}
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title text-lg">
+                  <TrendingUp className="w-5 h-5 text-success" />
+                  Statistiken
                 </h3>
-                <ul className="space-y-3 text-sm text-slate-600">
-                  <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
-                    <span>Füge Business-Kontext hinzu für bessere Antworten</span>
+                <div className="space-y-3 mt-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-base-content/60">Automatisierung</span>
+                    <span className="font-semibold">
+                      {stats.total_messages > 0 
+                        ? Math.round((stats.ai_messages / stats.total_messages) * 100) 
+                        : 0}%
+                    </span>
+                  </div>
+                  <progress 
+                    className="progress progress-success" 
+                    value={stats.total_messages > 0 ? (stats.ai_messages / stats.total_messages) * 100 : 0} 
+                    max="100"
+                  ></progress>
+                </div>
+              </div>
+            </div>
+
+            {/* Tips Card */}
+            <div className="card bg-base-100 shadow-sm">
+              <div className="card-body">
+                <h3 className="card-title text-lg">💡 Schnelltipps</h3>
+                <ul className="space-y-2 text-sm text-base-content/70 mt-2">
+                  <li className="flex items-start gap-2">
+                    <span className="badge badge-primary badge-xs mt-1.5"></span>
+                    Füge Business-Kontext hinzu für bessere Antworten
                   </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
-                    <span>Setze Eskalations-Keywords für wichtige Anfragen</span>
+                  <li className="flex items-start gap-2">
+                    <span className="badge badge-primary badge-xs mt-1.5"></span>
+                    Setze Eskalations-Keywords für wichtige Anfragen
                   </li>
-                  <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2" />
-                    <span>Teste den Prompt mit verschiedenen Fragen</span>
+                  <li className="flex items-start gap-2">
+                    <span className="badge badge-primary badge-xs mt-1.5"></span>
+                    Teste den Prompt mit verschiedenen Fragen
                   </li>
                 </ul>
               </div>
@@ -481,45 +439,24 @@ const Index = () => {
       </div>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-2 safe-area-pb">
-        <div className="flex items-center justify-around">
-          <Link
-            to="/dashboard"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-blue-600"
-          >
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-xs font-medium">Dashboard</span>
-          </Link>
-          <Link
-            to="/inbox"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
-          >
-            <Inbox className="w-5 h-5" />
-            <span className="text-xs font-medium">Inbox</span>
-          </Link>
-          <button
-            onClick={toggleGlobalAI}
-            disabled={togglingAI}
-            className={`flex flex-col items-center gap-1 py-2 px-4 ${
-              aiEnabled ? "text-emerald-600" : "text-rose-600"
-            }`}
-          >
-            {togglingAI ? (
-              <RefreshCw className="w-5 h-5 animate-spin" />
-            ) : (
-              <Bot className="w-5 h-5" />
-            )}
-            <span className="text-xs font-medium">{aiEnabled ? "KI An" : "KI Aus"}</span>
-          </button>
-          <Link
-            to="/settings"
-            className="flex flex-col items-center gap-1 py-2 px-4 text-slate-400"
-          >
-            <Settings className="w-5 h-5" />
-            <span className="text-xs font-medium">Settings</span>
-          </Link>
-        </div>
-      </nav>
+      <div className="btm-nav btm-nav-sm md:hidden bg-base-100 border-t border-base-300">
+        <Link to="/dashboard" className="active text-primary">
+          <LayoutDashboard className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">Dashboard</span>
+        </Link>
+        <Link to="/inbox">
+          <Inbox className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">Inbox</span>
+        </Link>
+        <button onClick={toggleGlobalAI} className={aiEnabled ? "text-success" : "text-error"}>
+          <Bot className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">{aiEnabled ? "KI An" : "KI Aus"}</span>
+        </button>
+        <Link to="/settings">
+          <Settings className="w-5 h-5" />
+          <span className="btm-nav-label text-xs">Settings</span>
+        </Link>
+      </div>
     </div>
   );
 };

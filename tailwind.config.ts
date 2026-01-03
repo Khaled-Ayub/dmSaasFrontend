@@ -1,114 +1,81 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
-  prefix: "",
   theme: {
-    container: {
-      center: true,
-      padding: "2rem",
-      screens: {
-        "2xl": "1400px",
-      },
-    },
     extend: {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
       },
-      colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-        },
-        destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
-        },
-        muted: {
-          DEFAULT: "hsl(var(--muted))",
-          foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        success: {
-          DEFAULT: "hsl(var(--success))",
-          foreground: "hsl(var(--success-foreground))",
-        },
-        warning: {
-          DEFAULT: "hsl(var(--warning))",
-          foreground: "hsl(var(--warning-foreground))",
-        },
-        highlight: {
-          DEFAULT: "hsl(var(--highlight))",
-          foreground: "hsl(var(--highlight-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
-        },
-        card: {
-          DEFAULT: "hsl(var(--card))",
-          foreground: "hsl(var(--card-foreground))",
-        },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 4px)",
-        sm: "var(--radius-sm)",
-        xs: "var(--radius-xs)",
-      },
-      boxShadow: {
-        card: "var(--shadow-card)",
-        hover: "var(--shadow-hover)",
-        button: "var(--shadow-button)",
-      },
-      keyframes: {
-        "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
-        },
-        "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
-        },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(20px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-      },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.4s ease-out",
-        "slide-up": "slide-up 0.5s ease-out",
-      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("daisyui")],
+  // daisyUI Konfiguration
+  daisyui: {
+    themes: [
+      {
+        // Eigenes DMAuto Theme
+        dmauto: {
+          "primary": "#3b82f6",          // Blau
+          "primary-content": "#ffffff",
+          "secondary": "#8b5cf6",         // Violett
+          "secondary-content": "#ffffff",
+          "accent": "#f97316",            // Orange
+          "accent-content": "#ffffff",
+          "neutral": "#1f2937",           // Dark Gray
+          "neutral-content": "#f3f4f6",
+          "base-100": "#ffffff",          // Weiß
+          "base-200": "#f8fafc",          // Sehr helles Grau
+          "base-300": "#e2e8f0",          // Helles Grau
+          "base-content": "#1e293b",      // Dunkelgrau Text
+          "info": "#0ea5e9",              // Sky Blue
+          "info-content": "#ffffff",
+          "success": "#22c55e",           // Grün
+          "success-content": "#ffffff",
+          "warning": "#eab308",           // Gelb
+          "warning-content": "#1f2937",
+          "error": "#ef4444",             // Rot
+          "error-content": "#ffffff",
+        },
+      },
+      {
+        // Dark Theme
+        dmautodark: {
+          "primary": "#60a5fa",           // Hellblau
+          "primary-content": "#1e293b",
+          "secondary": "#a78bfa",         // Hell-Violett
+          "secondary-content": "#1e293b",
+          "accent": "#fb923c",            // Hell-Orange
+          "accent-content": "#1e293b",
+          "neutral": "#374151",           // Gray
+          "neutral-content": "#f9fafb",
+          "base-100": "#0f172a",          // Sehr dunkel
+          "base-200": "#1e293b",          // Dunkel
+          "base-300": "#334155",          // Mittel-Dunkel
+          "base-content": "#f1f5f9",      // Heller Text
+          "info": "#38bdf8",
+          "info-content": "#1e293b",
+          "success": "#4ade80",
+          "success-content": "#1e293b",
+          "warning": "#facc15",
+          "warning-content": "#1e293b",
+          "error": "#f87171",
+          "error-content": "#1e293b",
+        },
+      },
+      "light",
+      "dark",
+      "cupcake",
+      "corporate",
+      "synthwave",
+      "cyberpunk",
+      "night",
+      "coffee",
+    ],
+    darkTheme: "dmautodark",
+    base: true,
+    styled: true,
+    utils: true,
+    logs: false,
+  },
 } satisfies Config;
